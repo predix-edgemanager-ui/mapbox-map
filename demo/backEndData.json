@@ -1,0 +1,198 @@
+[
+{
+"asdid": "AB8899AA001B",
+    "latitude": 31.2304,
+    "longitude": 121.4737,
+    "type": "DEVICE",
+    "source": "USER",
+    "device": {
+        "asdid": "AB8899AA001A",
+        "name": "Jack's device",
+        "did": "GE_UNIQUE_ID",
+        "device_model_id": "80040",
+        "device_model_version": "1",
+        "device_model_name": "Wi-Fi Router",
+        "registration_status": "REGISTERED",
+        "id":1,
+        "status": {
+            "device_status": "REACHABLE",
+            "last_change": 1442534778
+        },
+        "attributes": {
+            "name": "Jack's device",
+            "group": "Block A",
+            "location": "San Diego, CA",
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+        } 
+    }
+},
+{
+"asdid": "AB8899AA001B",
+    "latitude": 31.2304,
+    "longitude": 121.4737,
+    "type": "DEVICE",
+    "source": "USER",
+    "device": {
+        "asdid": "AB8899AA001A",
+        "name": "Jack's device",
+        "did": "GE_UNIQUE_ID",
+        "device_model_id": "80040",
+        "device_model_version": "1",
+        "device_model_name": "Wi-Fi Router",
+        "registration_status": "REGISTERED",
+        "id":1,
+        "status": {
+            "device_status": "REACHABLE",
+            "last_change": 1442534778
+        },
+        "attributes": {
+            "name": "Jack's device",
+            "group": "Block A",
+            "location": "San Diego, CA",
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+        } 
+    }
+},
+{
+"asdid": "AB8899AA001B",
+    "latitude": 31.2304,
+    "longitude": 121.4737,
+    "type": "DEVICE",
+    "source": "USER",
+    "device": {
+        "asdid": "AB8899AA001A",
+        "name": "Jack's device",
+        "did": "GE_UNIQUE_ID",
+        "device_model_id": "80040",
+        "device_model_version": "1",
+        "device_model_name": "Wi-Fi Router",
+        "registration_status": "REGISTERED",
+        "id":1,
+        "status": {
+            "device_status": "REACHABLE",
+            "last_change": 1442534778
+        },
+        "attributes": {
+            "name": "Jack's device",
+            "group": "Block A",
+            "location": "San Diego, CA",
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+        } 
+    }
+},
+{
+"asdid": "AB8899AA001B",
+    "latitude": 31.2304,
+    "longitude": 121.4737,
+    "type": "DEVICE",
+    "source": "USER",
+    "device": {
+        "asdid": "AB8899AA001A",
+        "name": "Jack's device",
+        "did": "GE_UNIQUE_ID",
+        "device_model_id": "80040",
+        "device_model_version": "1",
+        "device_model_name": "Wi-Fi Router",
+        "registration_status": "REGISTERED",
+        "id":1,
+        "status": {
+            "device_status": "REACHABLE",
+            "last_change": 1442534778
+        },
+        "attributes": {
+            "name": "Jack's device",
+            "group": "Block A",
+            "location": "San Diego, CA",
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+        } 
+    }
+},
+{
+"asdid": "AB8899AA001B",
+    "latitude": 31.2304,
+    "longitude": 121.4737,
+    "type": "DEVICE",
+    "source": "USER",
+    "device": {
+        "asdid": "AB8899AA001A",
+        "name": "Jack's device",
+        "did": "GE_UNIQUE_ID",
+        "device_model_id": "80040",
+        "device_model_version": "1",
+        "device_model_name": "Wi-Fi Router",
+        "registration_status": "REGISTERED",
+        "id":1,
+        "status": {
+            "device_status": "REACHABLE",
+            "last_change": 1442534778
+        },
+        "attributes": {
+            "name": "Jack's device",
+            "group": "Block A",
+            "location": "San Diego, CA",
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+        } 
+    }
+},
+{
+"asdid": "AB8899AA001B",
+    "latitude": 31.2304,
+    "longitude": 121.4737,
+    "type": "DEVICE",
+    "source": "USER",
+    "device": {
+        "asdid": "AB8899AA001A",
+        "name": "Jack's device",
+        "did": "GE_UNIQUE_ID",
+        "device_model_id": "80040",
+        "device_model_version": "1",
+        "device_model_name": "Wi-Fi Router",
+        "registration_status": "REGISTERED",
+        "id":1,
+        "status": {
+            "device_status": "REACHABLE",
+            "last_change": 1442534778
+        },
+        "attributes": {
+            "name": "Jack's device",
+            "group": "Block A",
+            "location": "San Diego, CA",
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+        } 
+    }
+},
+{
+"asdid": "AB8899AA001B",
+    "latitude": 31.2304,
+    "longitude": 121.4737,
+    "type": "DEVICE",
+    "source": "USER",
+    "device": {
+        "asdid": "AB8899AA001A",
+        "name": "Jack's device",
+        "did": "GE_UNIQUE_ID",
+        "device_model_id": "80040",
+        "device_model_version": "1",
+        "device_model_name": "Wi-Fi Router",
+        "registration_status": "REGISTERED",
+        "id":1,
+        "status": {
+            "device_status": "REACHABLE",
+            "last_change": 1442534778
+        },
+        "attributes": {
+            "name": "Jack's device",
+            "group": "Block A",
+            "location": "San Diego, CA",
+            "latitude": "31.2304",
+            "longitude": "121.4737"
+        } 
+    }
+}
+]

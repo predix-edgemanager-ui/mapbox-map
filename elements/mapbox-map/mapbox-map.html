@@ -1,40 +1,41 @@
 <link rel="import" href="../../../polymer/polymer.html">
 <link rel="import" href="../../../iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="map-side-menu.html">
+
 <!--
-The `mapbox-map` element renders a MapBox Map.
+The `mapbox-map` element renders the Map layer, but it needs the marker-layer to process marker information
 <b>Example</b>:
-    <style>
-      mapbox-map {
-        display: block;
-        height: 100%;
-        width: 100%;
-      }
-    </style>
+
     <mapbox-map latitude="37.77493" longitude="-122.41942"></mapbox-map>
-<b>Example</b> - add markers to the map and ensure they're in view:
-    <mapbox-map latitude="37.77493" longitude="-122.41942" >
-      <mapbox-marker latitude="37.779" symbol="police" longitude="-122.3892"
-          draggable label="Go Giants!"></mapbox-marker>
-      <mapbox-marker latitude="37.777" longitude="-122.38911"></mapbox-marker>
-    </mapbox-mapp>
-<b>Example</b>:
-    <mapbox-map disable-default-ui zoom="15"></mapbox-map>
-    <script>
-      var map = document.querySelector('mapbox-map');
-      map.latitude = 37.77493;
-      map.longitude = -122.41942;
-      map.addEventListener('mapbox-map-ready', function(e) {
-        alert('Map loaded!');
-      });
-    </script>
-<b>Example</b> - with Leaflet-Cluster plugin
-    <mapbox-map latitude="37.77493" longitude="-122.41942" >
-      <mapbox-cluster>
-        <mapbox-marker latitude="37.779" symbol="police" longitude="-122.3892"
-            draggable label="Go Giants!"></mapbox-marker>
-        <mapbox-marker latitude="37.777" longitude="-122.38911"></mapbox-marker>
-    </mapbox-cluster>
-    </mapbox-mapp>
+<br><b>Example</b> - add markers to the map and ensure they're in view:
+
+
+        <div style="flex flex--row">
+          <div style="height:80vh;">  
+            <mapbox-map 
+              id="mapContainer"
+              zoom="3"
+              latitude="37.77493" 
+              longitude="-122.41942"
+              layer="roadtrippers.ijjip7cb"
+              selected-features="{{selectedFeatures}}"
+              zoomable
+              side-menu-dropdown="{{sideMenuDropdown}}">
+              <marker-layer 
+                selected-marker="{{markerClicked}}" 
+                cluster-marker legend-info="{{legendInfo}}" 
+                custom-pie-color-function="myMap.customPieColorFunction" 
+                custom-legend-function="myMap.customizedLegendInfo"
+                data='{{inputData}}' 
+                selected-icon="{{selectedIcon}}">
+              </marker-layer>
+            </mapbox-map>
+          </div>
+        <div style="height:20vh";> 
+          <map-legend id="legendBox" legend-info="[[legendInfo]]" individual-feature-info="[[markerClicked]]" detail-title="All Devices" drop-down-config="{{dropDownConfig}}">
+          </map-legend>
+        </div>
+      </div>
 @demo
 -->
 <dom-module id="mapbox-map">
@@ -55,7 +56,11 @@ The `mapbox-map` element renders a MapBox Map.
   <link rel="stylesheet" href="../../../mapbox.js/mapbox.css">
   <link rel="stylesheet" href="../../../leaflet.fullscreen/Control.FullScreen.css" title="no title" charset="utf-8">
   <link rel="stylesheet" href="../../../leaflet.locatecontrol/dist/L.Control.Locate.mapbox.min.css">
-  <template>
+  <link rel="stylesheet" href="map-component.css">
+
+  <template is="dom-bind">
+   <map-side-menu id="sideMenu" side-menu-dropdown="{{sideMenuDropdown}}"selected-features="{{selectedFeatures}}"></map-side-menu>
+
     <div id="mapbox"></div>
     <content id="features" select="*"></content>
   </template>
@@ -80,6 +85,13 @@ The `mapbox-map` element renders a MapBox Map.
                       'Db2dDEClQ3ybQe_egT87lg',
             notify: true
           },
+          sideMenuDropdown:{
+            type:Array,
+            value: function() {
+                return [];
+            },
+            notify:true   
+          },
 
           /**
            * This option disables loading tiles outside of the world bounds.
@@ -93,19 +105,17 @@ The `mapbox-map` element renders a MapBox Map.
           },
 
           /**
-           * Load GeoJSON data for this layer from the URL or ID given by url or id.
-           * @attribute load-feature
-           * @type String
+           * selectedFeatures are on features that were added to the group, it is passed to the side menu to display all selected features
+           * @attribute selectedFeatures
+           * @type Array
            */
-          loadFeature:{
-            type: String,
-            value: '',
-            observer: '_loadFeatureChanged'
-          },
 
-          featureToElements: {
-            type: Boolean,
-            value: false
+          selectedFeatures:{
+            type:Array,
+            value: function() {
+                return [];
+            },
+            notify:true        
           },
 
           /**
@@ -115,7 +125,7 @@ The `mapbox-map` element renders a MapBox Map.
            */
           latitude: {
             type: Number,
-            value: 38.867847507701114,
+            value: -112,
             notify: true,
             reflectToAttribute: true
           },
@@ -127,7 +137,7 @@ The `mapbox-map` element renders a MapBox Map.
            */
           longitude: {
            type: Number,
-           value: 38.867847507701114,
+           value: 38,
            notify: true,
            reflectToAttribute: true
           },
@@ -139,7 +149,7 @@ The `mapbox-map` element renders a MapBox Map.
            */
           zoom: {
             type: Number,
-            value: 10,
+            value: 2,
             reflectToAttribute: true,
             observer: '_zoomChanged'
           },
@@ -152,7 +162,7 @@ The `mapbox-map` element renders a MapBox Map.
           */
           minZoom: {
             type: Number,
-            value: 3
+            value: 1
           },
 
           /**
@@ -456,6 +466,10 @@ The `mapbox-map` element renders a MapBox Map.
             value: false,
             observer: '_toggleFullscreen'
           },
+          _isSideBarOpen: {
+            type:Boolean,
+            value:false
+          },
 
           /**
            * If set, enable a button for geolocation of the map.
@@ -505,7 +519,7 @@ The `mapbox-map` element renders a MapBox Map.
           },
 
           /**
-          *
+          * center of the map
           */
           center: {
             type: Array,
@@ -533,6 +547,7 @@ The `mapbox-map` element renders a MapBox Map.
 
         attached: function() {
           this._initMapbox();
+          this._initMethodAfterMapLoaded();
         },
 
         detached: function() {
@@ -567,7 +582,7 @@ The `mapbox-map` element renders a MapBox Map.
             doubleClickZoom: this.zoomable,
             scrollWheelZoom: this.zoomable,
             tapTolerance: this.tapTolerance,
-            zoomControl: !this.disableZoomUi,
+            zoomControl: this.disableZoomUi,
             tileLayer: {
                 // This map option disables world wrapping. by default, it is false.
                 continuousWorld: false,
@@ -584,16 +599,23 @@ The `mapbox-map` element renders a MapBox Map.
             inertiaDeceleration: this.inertiaDeceleration,
             zoomAnimationThreshold: this.zoomAnimationThreshold
           };
+
           var map = L.mapbox.map( this.$.mapbox, this.layer, mapOptions );
           this.map = map;
           this._updateCenter();
           this._updateLayers();
-          this._loadFeatureChanged();
+          new L.Control.Zoom({ position: 'topright' }).addTo(map);
 
 
           map.on('click dblclick mousedown mouseup mouseover mouseout mousemove contextmenu focus blur preclick load unload viewreset movestart move dragstart drag dragend zoomstart zoomlevelschange zoomend resize autopanstart layeradd layerremove baselayerchange overlayadd overlayremove locationfound locationerror popupopen popupclose', function(e) {
             this.fire(e.type, e);
           }, this);
+
+          map.on('drag zoomlevelschange resize zoomend markerClosed', function(e) {
+            var bound = this.map.getBounds();
+            fireEventAndBound={"event":e,"bound":bound};
+            this.fire("map-changed", fireEventAndBound);
+          },this);
 
           map.on('moveend', function(e) {
             this._ignoreViewChange = true;
@@ -611,8 +633,24 @@ The `mapbox-map` element renders a MapBox Map.
           this._toggleGeolocator();
           this._toggleFullscreen();
 
+
           this.fire( 'mapbox-map-ready' );
 
+        },
+
+        _initMethodAfterMapLoaded:function(){
+          var sideBar=document.querySelector('.sideMenuOpener');
+          sideBar.addEventListener('click', function(e) {
+            var toolbar=document.querySelector('#sideMenu');
+            if (this._isSideBarOpen){
+              toolbar.classList.remove('open');
+              this._isSideBarOpen=false;
+            }
+            else{
+              this._isSideBarOpen=true;
+              toolbar.classList.add('open');
+            }
+          }.bind(this));        
         },
 
         _observeLayers: function(){
@@ -731,7 +769,6 @@ The `mapbox-map` element renders a MapBox Map.
             this.map.setMaxBounds(newVal);
             this.map.fitBounds(newVal);
           }
-
         },
 
         _layerChanged: function(){
@@ -828,15 +865,6 @@ The `mapbox-map` element renders a MapBox Map.
             throw new TypeError('It has to be a function', "mapbox-map.js", 607);
           }
 
-        },
-
-        _loadFeatureChanged: function(){
-          if(this.map && this.loadFeature){
-            if(this.featureLayer) this.featureLayer.removeFrom( this.map );
-            this.featureLayer = L.mapbox.featureLayer(this.loadFeature);
-            if(!this.featureToElements){
-              this.featureLayer.addTo(this.map);}
-          }
         },
 
         /**
