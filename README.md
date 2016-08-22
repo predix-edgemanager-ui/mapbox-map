@@ -10,25 +10,17 @@ Tech
 `<mapbox-map></mapbox-map>` use:
 * [Mapbox] - Awesome library for use Open Maps
 * [Polymer] - Awesome framework for web components.
-* [maki] - Native icons for mapbox. `<mapbox-marker symbol="restaurant"></mapbox-marker>`
 
 Use guide
 --------------
 ```bash
-$ git clone git@github.com:GNURub/mapbox-map.git
+$ git clone 
 $ cd mapbox-map
 $ bower install
+$ polymer serve
 ```
 
-##### Install mapbox-map component using [bower].
-Coming soon...
 
-
-```bash
-
-$ bower install mapbox-map
-
-```
 
 ##### Configure Polymer and the new component.
 
