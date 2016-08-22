@@ -3,7 +3,9 @@
 
 Make Open Street Maps using declarative Polymer web components. To get started read the [&lt;mapbox-doc&gt;&lt;/mapbox-doc&gt;] or checkout the [&lt;mapbox-demo&gt;&lt;/mapbox-demo&gt;].
 
-
+Bugs
+-----------
+*Marker cluster does not show when first time loaded, need to move the map slightly to show marker cluster. Can be timing issue.
 Tech
 -----------
 
