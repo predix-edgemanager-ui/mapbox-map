@@ -30,8 +30,9 @@ The `user-usage` element is an example of how one user would use the current map
   <div style="flex flex--row">
     <div style="height:80vh;">  
       <mapbox-map 
+        no-wrap
         id="mapContainer"
-        zoom="3"
+        zoom="1"
         latitude="37.77493" 
         longitude="-122.41942"
         layer="roadtrippers.ijjip7cb"
@@ -67,10 +68,10 @@ The `user-usage` element is an example of how one user would use the current map
         if (deviceStatus=="reachable"){
           return "blue";
         }
-        else if (deviceStatus="unreachable"){
+        else if (deviceStatus=="unreachable"){
           return "red";
         }
-        else if (deviceStatus="unassigned"){
+        else if (deviceStatus=="unassigned"){
           return "yellow";
         }
       },
@@ -182,7 +183,7 @@ The `user-usage` element is an example of how one user would use the current map
         },
         ready: function() {
           //user can set customize icon when a icon is clicked on
-          this.selectedIcon={'color':'red','icon':'http://downloadicons.net/sites/default/files/check--selected-icon-67566.png'};
+          this.selectedIcon={'color':'red','icon':'http://downloadicons.net/sites/default/files/check--selected-icon-67566.png',"iconHeight":20,"iconWidth":20};
           //user needs to provide all dropdown menu content
           this.dropDownConfig={"items":[{"key":"issueCommand", "val": "Issue Command"},{"key":"addDevice", "val": "Add Device"}, {"key":"RunDiagnostic", "val": "Run Diagnostic"}, {"key":"assignTechnician", "val": "Assign Technician"}],"max-cont-character-width":10,"extend-dropdown":true,"extend-dropdown-by":15,'display-value':"Action on Device"};
           this.sideMenuDropdown={"items":[{"key":"issueCommand", "val": "Issue Command"}, {"key":"RunDiagnostic", "val": "Run Diagnostic"}, {"key":"assignTechnician", "val": "Assign Technician"}],"max-cont-character-width":10,"extend-dropdown":true,"extend-dropdown-by":15,'display-value':"Action on Selected Device"};
@@ -199,8 +200,8 @@ The `user-usage` element is an example of how one user would use the current map
         _convertResponseToFeature:function(response){
           featureArray=[];
           for (var i=0 ; i<response.length ; i++){
-            var lat = response[i].device.attributes.latitude;
-            var lng = response[i].device.attributes.longitude;
+            var lat = response[i].latitude;
+            var lng = response[i].longitude;
             var eachFeature = {
             "type": "Feature",
             "properties": response[i].device,
@@ -222,13 +223,13 @@ The `user-usage` element is an example of how one user would use the current map
         _getIconInfo:function(eachDevice){
           var status = eachDevice.device.status.device_status;
           if (status=="REACHABLE"){
-            return {"icon":"http://a2.mzstatic.com/us/r30/Purple3/v4/9c/e8/85/9ce8858b-6037-d564-8568-96a1b4bd6562/icon350x350.jpeg"};
+            return {"icon":"http://a2.mzstatic.com/us/r30/Purple3/v4/9c/e8/85/9ce8858b-6037-d564-8568-96a1b4bd6562/icon350x350.jpeg","iconHeight":20,"iconWidth":20};
           }
           else if (status=="UNREACHABLE"){
-            return {"icon":"https://cdn3.iconfinder.com/data/icons/rcons-user-profession/32/repairer-128.png"};
+            return {"icon":"https://cdn3.iconfinder.com/data/icons/rcons-user-profession/32/repairer-128.png","iconHeight":20,"iconWidth":20};
           }
           else if (status=="UNASSIGNED"){
-            return {"icon":"http://icons.apnic.net/s/en/2171/31/_/images/icons/profilepics/anonymous.png"};
+            return {"icon":"http://icons.apnic.net/s/en/2171/31/_/images/icons/profilepics/anonymous.png","iconHeight":20,"iconWidth":20};
           }
         },
         _onMapChanged:function(evt){
