@@ -2,7 +2,7 @@
 ==========================================
 Bugs
 -----------
-*Marker cluster does not show when first time loaded, need to move the map slightly to show marker cluster. Can be timing issue.
+* Marker cluster does not show when first time loaded, need to move the map slightly to show marker cluster. Can be timing issue.
 * User needs to convert properties deeper than one level to the same level
 
 Tech
