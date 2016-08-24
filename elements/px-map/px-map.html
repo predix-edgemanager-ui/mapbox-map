@@ -3,16 +3,16 @@
 <link rel="import" href="map-side-menu.html">
 
 <!--
-The `mapbox-map` element renders the Map layer, but it needs the marker-layer to process marker information
+The `px-map` element renders the Map layer, but it needs the marker-layer to process marker information
 <b>Example</b>:
 
-    <mapbox-map latitude="37.77493" longitude="-122.41942"></mapbox-map>
+    <px-map latitude="37.77493" longitude="-122.41942"></px-map>
 <br><b>Example</b> - add markers to the map and ensure they're in view:
 
 
         <div style="flex flex--row">
           <div style="height:80vh;">  
-            <mapbox-map 
+            <px-map 
               id="mapContainer"
               zoom="3"
               latitude="37.77493" 
@@ -29,7 +29,7 @@ The `mapbox-map` element renders the Map layer, but it needs the marker-layer to
                 data='{{inputData}}' 
                 selected-icon="{{selectedIcon}}">
               </marker-layer>
-            </mapbox-map>
+            </px-map>
           </div>
         <div style="height:20vh";> 
           <map-legend id="legendBox" legend-info="[[legendInfo]]" individual-feature-info="[[markerClicked]]" detail-title="All Devices" drop-down-config="{{dropDownConfig}}">
@@ -38,14 +38,14 @@ The `mapbox-map` element renders the Map layer, but it needs the marker-layer to
       </div>
 @demo
 -->
-<dom-module id="mapbox-map">
+<dom-module id="px-map">
   <style>
     :host{
      position: relative;
      display: block;
      height: 100%;
     }
-    :host #mapbox{
+    :host #pxmap{
       bottom: 0;
       left: 0;
       position: absolute!important;
@@ -61,13 +61,13 @@ The `mapbox-map` element renders the Map layer, but it needs the marker-layer to
   <template is="dom-bind">
    <map-side-menu id="sideMenu" side-menu-dropdown="{{sideMenuDropdown}}"selected-features="{{selectedFeatures}}"></map-side-menu>
 
-    <div id="mapbox"></div>
+    <div id="pxmap"></div>
     <content id="features" select="*"></content>
   </template>
   <script>
     HTMLImports.whenReady(function() {
       Polymer({
-        is: "mapbox-map",
+        is: "px-map",
         properties: {
           /**
            * A Maps API object.
@@ -600,7 +600,7 @@ The `mapbox-map` element renders the Map layer, but it needs the marker-layer to
             zoomAnimationThreshold: this.zoomAnimationThreshold
           };
 
-          var map = L.mapbox.map( this.$.mapbox, this.layer, mapOptions );
+          var map = L.mapbox.map( this.$.pxmap, this.layer, mapOptions );
           this.map = map;
           this._updateCenter();
           this._updateLayers();

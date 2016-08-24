@@ -1,7 +1,7 @@
 <link rel="import" href="../../../polymer/polymer.html">
 <link rel="import" href="../mapbox-behaviors/mapbox-behaviors.html">
 <link rel="import" href="../mapbox-import/mapbox-import.html">
-<link rel="import" href="../mapbox-map/mapbox-map.html">
+<link rel="import" href="../px-map/px-map.html">
 <link rel="import" href="../marker-layer/marker-layer.html">
 <link rel="import" href="../map-legend/map-legend.html">
 <script type="text/javascript" src="../../../lodash/lodash.min.js"></script>
@@ -21,7 +21,7 @@ The `user-usage` element is an example of how one user would use the current map
     auto>
     </iron-ajax>
    <style>
-    mapbox-map {
+    px-map {
       display: block;
       height: 100%;
       width: 100%;
@@ -29,7 +29,7 @@ The `user-usage` element is an example of how one user would use the current map
   </style>
   <div style="flex flex--row">
     <div style="height:80vh;">  
-      <mapbox-map 
+      <px-map 
         no-wrap
         id="mapContainer"
         zoom="1"
@@ -47,7 +47,7 @@ The `user-usage` element is an example of how one user would use the current map
           data='{{inputData}}' 
           selected-icon="{{selectedIcon}}">
         </marker-layer>
-      </mapbox-map>
+      </px-map>
     </div>
   <div style="height:20vh";> 
     <map-legend id="legendBox" legend-info="[[legendInfo]]" individual-feature-info="[[markerClicked]]" detail-title="All Devices" drop-down-config="{{dropDownConfig}}">

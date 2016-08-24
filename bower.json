@@ -6,7 +6,7 @@
     "Ruben Cid Lara <rubencidlara@gmail.com> (https://github.com/GNURub)"
   ],
   "main": [
-    "elements/mapbox-map.html"
+    "elements/px-map.html"
   ],
   "keywords": [
     "map-box",

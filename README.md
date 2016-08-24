@@ -1,4 +1,4 @@
-&lt;mapbox-map&gt; element &lt;/mapbox-map&gt;
+&lt;px-map&gt; element &lt;/px-map&gt;
 ==========================================
 
 Make Open Street Maps using declarative Polymer web components. To get started read the [&lt;mapbox-doc&gt;&lt;/mapbox-doc&gt;] or checkout the [&lt;mapbox-demo&gt;&lt;/mapbox-demo&gt;].
@@ -9,7 +9,7 @@ Bugs
 Tech
 -----------
 
-`<mapbox-map></mapbox-map>` use:
+`<px-map></px-map>` use:
 * [Mapbox] - Awesome library for use Open Maps
 * [Polymer] - Awesome framework for web components.
 
@@ -17,7 +17,7 @@ Use guide
 --------------
 ```bash
 $ git clone 
-$ cd mapbox-map
+$ cd px-map
 $ bower install
 $ polymer serve
 ```
@@ -35,7 +35,7 @@ $ polymer serve
     		margin: 0;
     		height: 100%;
     	}
-    	mapbox-map {
+    	px-map {
     		height: 100%;
     	}
 	  </style>
@@ -43,7 +43,7 @@ $ polymer serve
   <body unresolved>
   <div style="flex flex--row">
     <div style="height:80vh;">  
-      <mapbox-map 
+      <px-map 
         id="mapContainer"
         zoom="3"
         latitude="37.77493" 
@@ -60,7 +60,7 @@ $ polymer serve
           data='{{inputData}}' 
           selected-icon="{{selectedIcon}}">
         </marker-layer>
-      </mapbox-map>
+      </px-map>
     </div>
   <div style="height:20vh";> 
     <map-legend id="legendBox" legend-info="[[legendInfo]]" individual-feature-info="[[markerClicked]]" detail-title="All Devices" drop-down-config="{{dropDownConfig}}">
@@ -76,7 +76,7 @@ License
 MIT
 
 
-[&lt;mapbox-demo&gt;&lt;/mapbox-demo&gt;]:http://gnurub.github.io/mapbox-map/components/map-box/
+[&lt;mapbox-demo&gt;&lt;/mapbox-demo&gt;]:http://gnurub.github.io/px-map/components/map-box/
 [&lt;mapbox-doc&gt;&lt;/mapbox-doc&gt;]:http://gnurub.github.io/mapbox-map/components/map-box/
 [Polymer]:http://www.polymer-project.org/
 [MapBoxEditor]:https://www.mapbox.com/editor
