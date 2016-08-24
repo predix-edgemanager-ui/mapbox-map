@@ -13,9 +13,9 @@ How to use:
 
 The map is consist of two layers so far.
 The main components used are located in 
-elements/px-map
-elements/marker-layer
-elements/map-legend
+* elements/px-map
+* elements/marker-layer
+* elements/map-legend
 
 to understand how to use the components, please see elements/user-usage to see how user would use the component
 
