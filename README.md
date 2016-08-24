@@ -1,21 +1,20 @@
 &lt;px-map&gt; element &lt;/px-map&gt;
 ==========================================
-
-Make Open Street Maps using declarative Polymer web components. To get started read the [&lt;mapbox-doc&gt;&lt;/mapbox-doc&gt;] or checkout the [&lt;mapbox-demo&gt;&lt;/mapbox-demo&gt;].
-
 Bugs
 -----------
 *Marker cluster does not show when first time loaded, need to move the map slightly to show marker cluster. Can be timing issue.
 Tech
+* User needs to convert properties deeper than one level to the same level
 -----------
 
 How to use:
 
-The map is consist of two layers so far.
+The map is consist of two layers so far and in the future addition layer can be added to the existing two layers.
 The main components used are located in 
-* elements/px-map
-* elements/marker-layer
-* elements/map-legend
+* elements/px-map: Main map layer to display map and serve as the base to add more layers
+* elements/px-map/map-side-menu: Side menu to display marker groups 
+* elements/marker-layer: layer to display markers on the map 
+* elements/map-legend: legend to display marker details and perform action on the markers.
 
 to understand how to use the components, please see elements/user-usage to see how user would use the component
 
@@ -32,6 +31,7 @@ $ git clone
 $ cd px-map
 $ bower install
 $ polymer serve
+go to px-map and click on demo to see a demo
 ```
 
 
