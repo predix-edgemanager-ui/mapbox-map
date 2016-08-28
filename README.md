@@ -1,6 +1,6 @@
 #px-map
 ==========================================
-[![px-map demo](px-map.png?raw=true)]
+![px-map demo](px-map.png?raw=true)
 ## Overview
 
 px-map is a Predix UI component
