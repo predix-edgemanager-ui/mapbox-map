@@ -1,36 +1,42 @@
-&lt;mapbox-map&gt; element &lt;/mapbox-map&gt;
+#px-vis-pie-chart
 ==========================================
 
-Make Open Street Maps using declarative Polymer web components. To get started read the [&lt;mapbox-doc&gt;&lt;/mapbox-doc&gt;] or checkout the [&lt;mapbox-demo&gt;&lt;/mapbox-demo&gt;].
+## Overview
+
+px-map is a Predix UI component
+
+## Usage
+
+### Prerequisites
+1. node.js
+2. npm
+3. bower
+4. [webcomponents-lite.js polyfill](https://github.com/webcomponents/webcomponentsjs)
+
+Node, npm and bower are necessary to install the component and dependencies. webcomponents.js adds support for web components and custom elements to your application.
 
 
-Tech
------------
+## Getting Started
 
-`<mapbox-map></mapbox-map>` use:
-* [Mapbox] - Awesome library for use Open Maps
-* [Polymer] - Awesome framework for web components.
-* [maki] - Native icons for mapbox. `<mapbox-marker symbol="restaurant"></mapbox-marker>`
-
-Use guide
---------------
+Install the app via git clone, go into the directory, bower install, run the app, go to px-map dropdown and click on the demo.
 ```bash
-$ git clone git@github.com:GNURub/mapbox-map.git
-$ cd mapbox-map
+$ git clone 
+$ cd px-map
 $ bower install
+$ polymer serve
+go to px-map and click on demo to see a demo
 ```
 
-##### Install mapbox-map component using [bower].
-Coming soon...
+Finally, use the component in your application:
+Here is the over structure of the code:
+The map is consist of two layers so far and in the future addition layer can be added to the existing two layers.
+The main components used are located in 
+* elements/px-map: Main map layer to display map and serve as the base to add more layers
+* elements/px-map/map-side-menu: Side menu to display marker groups 
+* elements/marker-layer: layer to display markers on the map 
+* elements/map-legend: legend to display marker details and perform action on the markers.
 
-
-```bash
-
-$ bower install mapbox-map
-
-```
-
-##### Configure Polymer and the new component.
+to understand how to use the components, please see elements/user-usage to see how user would use the component
 
 ```html
   <head>
@@ -41,7 +47,7 @@ $ bower install mapbox-map
     		margin: 0;
     		height: 100%;
     	}
-    	mapbox-map {
+    	px-map {
     		height: 100%;
     	}
 	  </style>
@@ -49,7 +55,7 @@ $ bower install mapbox-map
   <body unresolved>
   <div style="flex flex--row">
     <div style="height:80vh;">  
-      <mapbox-map 
+      <px-map 
         id="mapContainer"
         zoom="3"
         latitude="37.77493" 
@@ -66,7 +72,7 @@ $ bower install mapbox-map
           data='{{inputData}}' 
           selected-icon="{{selectedIcon}}">
         </marker-layer>
-      </mapbox-map>
+      </px-map>
     </div>
   <div style="height:20vh";> 
     <map-legend id="legendBox" legend-info="[[legendInfo]]" individual-feature-info="[[markerClicked]]" detail-title="All Devices" drop-down-config="{{dropDownConfig}}">
@@ -76,22 +82,16 @@ $ bower install mapbox-map
   </body>
 ```
 
+<br />
+<hr />
+
+
+
+
+
+
+
 
 License
 -------
 MIT
-
-
-[&lt;mapbox-demo&gt;&lt;/mapbox-demo&gt;]:http://gnurub.github.io/mapbox-map/components/map-box/
-[&lt;mapbox-doc&gt;&lt;/mapbox-doc&gt;]:http://gnurub.github.io/mapbox-map/components/map-box/
-[Polymer]:http://www.polymer-project.org/
-[MapBoxEditor]:https://www.mapbox.com/editor
-[MapBoxStudio]:https://www.mapbox.com/mapbox-studio/
-[Mapbox]:https://www.mapbox.com/
-[Events mapbox]:https://www.mapbox.com/mapbox.js/api/v2.2.1/l-map-class/#map-events
-[Events marker]:https://www.mapbox.com/mapbox.js/api/v2.2.1/l-marker/#marker-events
-[maki]:https://www.mapbox.com/maki/
-[bower]:http://bower.io/
-[1]:http://pix.toile-libre.org/upload/original/1439212072.png
-[2]:http://i.imgur.com/Eclrm2ul.jpg
-[3]:http://i.imgur.com/P8HXkrFl.jpg

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <link rel="import" href="../../../polymer/polymer.html">
 <!--
 The `mapbox-layer` add a few tile layers to a map and is used as
@@ -24,88 +25,90 @@ a child element of the `mapbox-map` element.
 @homepage https://ruben96.github.io/mapbox-map/elements/mapbox-map/
 -->
 <dom-module id="mapbox-layers">
-  <style>
-    :host {
-      display: block;
-    }
-  </style>
-  <template>
-    <content id="layers" select="mapbox-layer"></content>
-  </template>
-  <script>
-    Polymer({
-      is: "mapbox-layers",
-      properties: {
-       /**
-        * A Feature API object.
-        */
-        feature: Object,
+	<style>
+		:host {
+			display: block;
+		}
 
-       /**
-        *
-        */
-        layers: {
-          type:Object,
-          value: {}
-        },
+	</style>
+	<template>
+		<content id="layers" select="mapbox-layer"></content>
+	</template>
+	<script>
+		Polymer({
+			is: "mapbox-layers",
+			properties: {
+				/**
+				 * A Feature API object.
+				 */
+				feature: Object,
 
-       /**
-        * A Map API object.
-        */
-        map: {
-          type: Object,
-          observer: '_mapChanged'
-        },
-      },
+				/**
+				 *
+				 */
+				layers: {
+					type: Object,
+					value: {}
+				},
 
-      behaviors: [
-        MapBox.RemoveFeature
-      ],
+				/**
+				 * A Map API object.
+				 */
+				map: {
+					type: Object,
+					observer: '_mapChanged'
+				},
+			},
 
-      _mapChanged: function(){
-        console.log("Layer called!");
-        this.feature = L.control.layers();
-        this.feature.on('baselayerchange overlayadd overlayremove', function(){
-          this.fire(e.type, e);
-        }, this);
-        if(this.map){
-          this._updateLayers();
-        }
-      },
+			behaviors: [
+				MapBox.RemoveFeature
+			],
 
-      _observeLayers: function(){
-        if (this._observer) {
-          return;
-        }
-        this._observer = new MutationObserver( this._updateLayers.bind(this) );
-        this._observer.observe(this, {
-          childList: true
-        });
-      },
+			_mapChanged: function() {
+				console.log("Layer called!");
+				this.feature = L.control.layers();
+				this.feature.on('baselayerchange overlayadd overlayremove', function() {
+					this.fire(e.type, e);
+				}, this);
+				if (this.map) {
+					this._updateLayers();
+				}
+			},
 
-      _updateLayers: function(){
-         var newLayers = Array.prototype.slice.call(
-         Polymer.dom(this.$.layers).getDistributedNodes());
+			_observeLayers: function() {
+				if (this._observer) {
+					return;
+				}
+				this._observer = new MutationObserver(this._updateLayers.bind(this));
+				this._observer.observe(this, {
+					childList: true
+				});
+			},
 
-         this._observeLayers();
+			_updateLayers: function() {
+				var newLayers = Array.prototype.slice.call(
+					Polymer.dom(this.$.layers).getDistributedNodes());
 
-         var label, feature, name;
-         for(var i = 0, layer; layer = newLayer[i]; ++i){
-           label = layer.getAttribute('label');
-           if(label != null){
-             feature = L.mapbox.tileLayer(label);
-             name    = layer.getAttribute('name') || label;
-             if(layer.getAttribute('overlay')){
-              this.feature.addOverlay( feature, name);
-             }else{
-               this.feature.addBaseLayer( feature, name);
-             }
-           }else{
-             throw new TypeError("get the label and name attributes!!");
-           }
-         }
-         this.feature.addTo(this.map);
-      }
-    });
-  </script>
+				this._observeLayers();
+
+				var label, feature, name;
+				for (var i = 0, layer; layer = newLayer[i]; ++i) {
+					label = layer.getAttribute('label');
+					if (label != null) {
+						feature = L.mapbox.tileLayer(label);
+						name = layer.getAttribute('name') || label;
+						if (layer.getAttribute('overlay')) {
+							this.feature.addOverlay(feature, name);
+						} else {
+							this.feature.addBaseLayer(feature, name);
+						}
+					} else {
+						throw new TypeError("get the label and name attributes!!");
+					}
+				}
+				this.feature.addTo(this.map);
+			}
+		});
+
+	</script>
 </dom-module>

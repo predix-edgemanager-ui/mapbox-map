@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <link rel="import" href="../../../polymer/polymer.html">
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <link rel="stylesheet" href="../../../Leaflet.awesome-markers/dist/leaflet.awesome-markers.css">
@@ -8,406 +9,417 @@
 The `marker-layer` element represents a cluster of the markers on the map and is used as
 a child element of the `mapbox-map` element.
 ##### Example: Add cluster of the markers
-<mapbox-map>
+<px-map>
   <marker-layer cluster-marker data="{{data}}"></marker-layer>
-</mapbox-map>
+</px-map>
 @element marker-layer
 @Using the Leaflet Markercluster plugin
 -->
 <dom-module id="marker-layer">
-  <style>
-    :host {
-      display: block;
-    }
-  </style>
-  <link rel="stylesheet" href="clusterpie.css"/>
-  <link rel="stylesheet" href="../../../leaflet.markercluster/dist/MarkerCluster.css">
-  <link rel="stylesheet" href="../../../leaflet.markercluster/dist/MarkerCluster.Default.css">
-  <template>
-    <content id="marker-layer" select="*"></content>
-  </template>
-  <script>
-    Polymer({
-      is: "marker-layer",
-      properties: {
-        /**
-         *MarkerCluster is the layer of all clustered markers
-         */
-        _markerCluster: Object,
+	<style>
+		:host {
+			display: block;
+		}
 
-        /**
-         *  A Map API object.
-         */
-        map: {
-          type: Object,
-          observer: '_mapChanged'
-        },
-        /**
-         *  Selected-marker keeps track of the current marker selected and pass it to the legend to show details
-         */
-        selectedMarker:{
-          type:Object,
-          notify:true
-        },
-        /**
-         *  selected-icon is an object that the user passes in and can create a customized icon when a marker is clicked,
-         *Default is black home icon if user does not pass in an object
-         */
-        selectedIcon:{
-          type:Object,
-          value: function() {
-              return {};
-          },          
-          notify:true
-        },
+	</style>
+	<link rel="stylesheet" href="clusterpie.css" />
+	<link rel="stylesheet" href="../../../leaflet.markercluster/dist/MarkerCluster.css">
+	<link rel="stylesheet" href="../../../leaflet.markercluster/dist/MarkerCluster.Default.css">
+	<template>
+		<content id="marker-layer-container" select="*"></content>
+	</template>
+	<script>
+		Polymer({
+			is: "marker-layer",
+			properties: {
+				/**
+				 *MarkerCluster is the layer of all clustered markers
+				 */
+				_markerCluster: Object,
 
-        /**
-         * Redius to show the cluster
-         * @type Number
-         */
-        radius: {
-          type: Number,
-          value: 80
-        },
-        /**
-         * maximum radius to show the cluster
-         * @type Number
-         */
-        rmax:{
-          type:Number,
-          value:30
-        },
+				/**
+				 *  A Map API object.
+				 */
+				map: {
+					type: Object,
+					observer: '_mapChanged'
+				},
+				/**
+				 *  Selected-marker keeps track of the current marker selected and pass it to the legend to show details
+				 */
+				selectedMarker: {
+					type: Object,
+					notify: true
+				},
+				/**
+				 *  selected-icon is an object that the user passes in and can create a customized icon when a marker is clicked,
+				 *Default is black home icon if user does not pass in an object
+				 */
+				selectedIcon: {
+					type: Object,
+					value: function() {
+						return {};
+					},
+					notify: true
+				},
 
-        /**
-         * GeoJson Data that the map takes in to display markers. Must follow geoJson format
-         * @type Array
-         */
-        data:{
-          type:Array,
-          value: function() {
-              return [];
-          },
-          notify:true,
-          observer: '_mapChanged'
-        },
-        /**
-         * legendInfo is information that the map pass to map-legend to display marker details
-         * @type Array
-         */
-        legendInfo:{
-          type:Object,
-          value: function() {
-              return {};
-          },
-          notify:true
-        },
-        /**
-         * boolean to decide if want to cluster the markers
-         * @type Boolean
-         */
-        clusterMarker:{
-          type:Boolean,
-          value:false
-        },
-        /**
-         * boolean to decide if want to show pop up marker detail, default is show detail at the legend
-         * @type Boolean
-         */
-        popup:{
-          type:Boolean,
-          value:false
-        }
-      },
-      ready:function(){
-        this._markerCluster = new L.MarkerClusterGroup({
-          maxClusterRadius: 2*this.rmax,
-          iconCreateFunction: this._defineClusterIcon.bind(this) 
-        });
-        this.layerGroup=L.featureGroup();
-      },
+				/**
+				 * Redius to show the cluster
+				 * @type Number
+				 */
+				radius: {
+					type: Number,
+					value: 80
+				},
+				/**
+				 * maximum radius to show the cluster
+				 * @type Number
+				 */
+				rmax: {
+					type: Number,
+					value: 30
+				},
 
-      _mapChanged: function(){
-        if(this.map && this.data.length!=0){
-          //clear all markers
-          this._markerCluster.clearLayers();
-          this.layerGroup.clearLayers();
-          //create markers and create customized selected icon
-          this._updateMarkers();
-          this._getCustomizedDisplayFunction();
-          this._setClickedIcon();
-          //set up listeners
-          this._markerCluster.on('click clusterclick', function (e) {
-            this.fire(e.type, e);
-          }, this);
-          this.map.on('drag zoomlevelschange resize zoomend markerClosed', function(e) {
-            this.fire(e.type, e);
-            this._getCountInfo();
-          },this);
-        }
-      },
+				/**
+				 * GeoJson Data that the map takes in to display markers. Must follow geoJson format
+				 * @type Array
+				 */
+				data: {
+					type: Array,
+					value: function() {
+						return [];
+					},
+					notify: true,
+					observer: '_mapChanged'
+				},
+				/**
+				 * legendInfo is information that the map pass to map-legend to display marker details
+				 * @type Array
+				 */
+				legendInfo: {
+					type: Object,
+					value: function() {
+						return {};
+					},
+					notify: true
+				},
+				/**
+				 * boolean to decide if want to cluster the markers
+				 * @type Boolean
+				 */
+				clusterMarker: {
+					type: Boolean,
+					value: false
+				},
+				/**
+				 * boolean to decide if want to show pop up marker detail, default is show detail at the legend
+				 * @type Boolean
+				 */
+				popup: {
+					type: Boolean,
+					value: false
+				}
+			},
+			ready: function() {
+				this._markerCluster = new L.MarkerClusterGroup({
+					maxClusterRadius: 2 * this.rmax,
+					iconCreateFunction: this._defineClusterIcon.bind(this)
+				});
+				this.layerGroup = L.featureGroup();
+			},
 
-      _getCustomizedDisplayFunction:function(){
-        return this._resolveFunctionOnWindow('custom-display-function');
-      },
-      _getCustomizedPieColorFunction:function(){
-        return this._resolveFunctionOnWindow('custom-pie-color-function');
-      },
-      _getCustomizedLegendFunction:function(){
-        return this._resolveFunctionOnWindow('custom-legend-function');
-      },
+			_mapChanged: function() {
+				if (this.map && this.data.length != 0) {
+					//clear all markers
+					this._markerCluster.clearLayers();
+					this.layerGroup.clearLayers();
+					//create markers and create customized selected icon
+					this._updateMarkers();
+					this._getCustomizedDisplayFunction();
+					this._setClickedIcon();
+					//set up listeners
+					this._markerCluster.on('click clusterclick', function(e) {
+						this.fire(e.type, e);
+					}, this);
+					this.map.on('drag zoomlevelschange resize zoomend markerClosed', function(e) {
+						this.fire(e.type, e);
+						this._getCountInfo();
+					}, this);
+				}
+			},
 
-      _getDefaultPopupDisplay:function(feature){
-        var props = feature.properties;
-        var attrs = Object.keys(props);
-        var attribute;
-        var value;
-        var popupContent=""; 
-        for (var i = 0; i < attrs.length; i += 1) {
-            attribute = attrs[i];
-            if (attribute!="iconUrl"){
-              popupContent += "<div>" + attribute + ": " + props[attribute] + "</div><hr>";
-            }
-        }
-        return popupContent;
-      },
+			_getCustomizedDisplayFunction: function() {
+				return this._resolveFunctionOnWindow('custom-display-function');
+			},
+			_getCustomizedPieColorFunction: function() {
+				return this._resolveFunctionOnWindow('custom-pie-color-function');
+			},
+			_getCustomizedLegendFunction: function() {
+				return this._resolveFunctionOnWindow('custom-legend-function');
+			},
 
-      _getCountInfo:function(){
-          //get the count info to display on the legend
-          var getLegendDisplayInfo=this._getCustomizedLegendFunction();
-          this.legendInfo=getLegendDisplayInfo(this.map);
-      },
+			_getDefaultPopupDisplay: function(feature) {
+				var props = feature.properties;
+				var attrs = Object.keys(props);
+				var attribute;
+				var value;
+				var popupContent = "";
+				for (var i = 0; i < attrs.length; i += 1) {
+					attribute = attrs[i];
+					if (attribute != "iconUrl") {
+						popupContent += "<div>" + attribute + ": " + props[attribute] + "</div><hr>";
+					}
+				}
+				return popupContent;
+			},
 
-      _resolveFunctionOnWindow:function(functionInput){
-        customFunction=window;
-        var customizeFunction=this[functionInput];
-        var customizeFunction=this.attributes[functionInput];
-        if (customizeFunction){
-        customFunctionFullPath = customizeFunction.value.split(".");
-        for(i in customFunctionFullPath) {
-            customFunction = customFunction[customFunctionFullPath[i]];
-            if(customFunction === undefined) {
-              console.warn("px-map: Custom function was used, but was not found on window. Is the path correct?");
-              return null;
-            }
-          }
-        }
-          return customFunction;
-      },
+			_getCountInfo: function() {
+				//get the count info to display on the legend
+				var getLegendDisplayInfo = this._getCustomizedLegendFunction();
+				this.legendInfo = getLegendDisplayInfo(this.map);
+			},
 
-      _createIcon:function(iconInfo){
-        if (this._isUrl(iconInfo.icon)){
-          var customizeIconCreater=this._getCustomizeIconSizeAndColorFunction(iconInfo);
-          var customizeIcon =new customizeIconCreater({iconUrl:iconInfo.icon});
-          return customizeIcon;
-        }
-        else{
-          var customFaMarker = L.AwesomeMarkers.icon({
-            icon: iconInfo.icon,
-            markerColor: iconInfo.color ? iconInfo.color : "black",
-            prefix:"fa"
-          });
-          return customFaMarker;
-        }
-      },
+			_resolveFunctionOnWindow: function(functionInput) {
+				customFunction = window;
+				var customizeFunction = this[functionInput];
+				var customizeFunction = this.attributes[functionInput];
+				if (customizeFunction) {
+					customFunctionFullPath = customizeFunction.value.split(".");
+					for (i in customFunctionFullPath) {
+						customFunction = customFunction[customFunctionFullPath[i]];
+						if (customFunction === undefined) {
+							console.warn("px-map: Custom function was used, but was not found on window. Is the path correct?");
+							return null;
+						}
+					}
+				}
+				return customFunction;
+			},
 
-      _getCustomizeIconSizeAndColorFunction:function(iconInfo){
-          var iconH=iconInfo.iconHeight ? iconInfo.iconHeight : 45;
-          var iconW=iconInfo.iconWidth  ? iconInfo.iconHeight : 45;
-          var iconAnchorHeight=iconInfo.iconAnchorHeight ? iconInfo.iconAnchorHeight : 45;
-          var iconAnchorWidth=iconInfo.iconAnchorWidth ? iconInfo.iconAnchorWidth : 45;
-          var iconPopupHeight=iconInfo.iconPopupHeight ? iconInfo.iconPopupHeight: -3;
-          var iconPopupWidth=iconInfo.iconPopupWidth ? iconInfo.iconPopupWidth : -76;
-          var iconColor=iconInfo.color ? iconInfo.color : "black"; 
-          var customizeIconCreater =L.Icon.extend({
-            options:{
-                shadowUrl:'',
-                iconSize:   [iconH,iconW],
-                iconAnchor: [iconAnchorWidth,iconAnchorHeight],
-                popupAnchor:[iconPopupWidth,iconPopupHeight],
-                color:"iconColor"
-            }
-          });
-          return customizeIconCreater;
-      },
+			_createIcon: function(iconInfo) {
+				if (this._isUrl(iconInfo.icon)) {
+					var customizeIconCreater = this._getCustomizeIconSizeAndColorFunction(iconInfo);
+					var customizeIcon = new customizeIconCreater({
+						iconUrl: iconInfo.icon
+					});
+					return customizeIcon;
+				} else {
+					var customFaMarker = L.AwesomeMarkers.icon({
+						icon: iconInfo.icon,
+						markerColor: iconInfo.color ? iconInfo.color : "black",
+						prefix: "fa"
+					});
+					return customFaMarker;
+				}
+			},
 
-      _setClickedIcon:function(){
-        if (this._isUrl(this.selectedIcon.icon)){
-          var icon = this.selectedIcon.icon;
-          var customizeIconCreater=this._getCustomizeIconSizeAndColorFunction(icon);
-          var customizeIcon =new customizeIconCreater({iconUrl:icon});
-          this.clickedIcon = customizeIcon;
-        }
-        else{
-          var customIcon = L.AwesomeMarkers.icon({
-            icon: this.selectedIcon.icon ? this.selectedIcon.icon : 'home' ,
-            markerColor: this.selectedIcon.color ? this.selectedIcon.color : 'black',
-            prefix:"fa"
-          });
-          this.clickedIcon = customIcon;
-        }
-      },
+			_getCustomizeIconSizeAndColorFunction: function(iconInfo) {
+				var iconH = iconInfo.iconHeight ? iconInfo.iconHeight : 45;
+				var iconW = iconInfo.iconWidth ? iconInfo.iconHeight : 45;
+				var iconAnchorHeight = iconInfo.iconAnchorHeight ? iconInfo.iconAnchorHeight : 45;
+				var iconAnchorWidth = iconInfo.iconAnchorWidth ? iconInfo.iconAnchorWidth : 45;
+				var iconPopupHeight = iconInfo.iconPopupHeight ? iconInfo.iconPopupHeight : -3;
+				var iconPopupWidth = iconInfo.iconPopupWidth ? iconInfo.iconPopupWidth : -76;
+				var iconColor = iconInfo.color ? iconInfo.color : "black";
+				var customizeIconCreater = L.Icon.extend({
+					options: {
+						shadowUrl: '',
+						iconSize: [iconH, iconW],
+						iconAnchor: [iconAnchorWidth, iconAnchorHeight],
+						popupAnchor: [iconPopupWidth, iconPopupHeight],
+						color: "iconColor"
+					}
+				});
+				return customizeIconCreater;
+			},
 
-       _isUrl:function(icon){
-           var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-          return regexp.test(icon);
-      },
-      _clickedMarker:function(e){      
-        if (this.selectedMarker) {
-          // Reset selected to its actual style
-          this.selectedMarker.setIcon(this.previousIcon);
-        }
-        if (this.selectedMarker!=e.target){
-          this.selectedMarker = e.target;
-          this.previousIcon=e.target.options.icon;
-          this.selectedMarker.setIcon(this.clickedIcon);
-        }
-        else{
-          //if the same marker is clicked
-          this.selectedMarker=undefined;
-        }
-      },
+			_setClickedIcon: function() {
+				if (this._isUrl(this.selectedIcon.icon)) {
+					var icon = this.selectedIcon.icon;
+					var customizeIconCreater = this._getCustomizeIconSizeAndColorFunction(icon);
+					var customizeIcon = new customizeIconCreater({
+						iconUrl: icon
+					});
+					this.clickedIcon = customizeIcon;
+				} else {
+					var customIcon = L.AwesomeMarkers.icon({
+						icon: this.selectedIcon.icon ? this.selectedIcon.icon : 'home',
+						markerColor: this.selectedIcon.color ? this.selectedIcon.color : 'black',
+						prefix: "fa"
+					});
+					this.clickedIcon = customIcon;
+				}
+			},
 
-      _updateMarkers: function(){
-        var allMarkerData=L.geoJson(this.data,{onEachFeature: function (feature, layer) {
-            //if user import iconUrl for customize icon, otherwise default icon
-            var customizedIcon = feature.iconInfo;
-            if (customizedIcon){
-              var customizeIcon = this._createIcon(feature.iconInfo);
-              layer.setIcon(customizeIcon);
-            }
-            //popup related functions
-            if (this.popup){
-              var customizePopupDisplayFunction = this._getCustomizedDisplayFunction();
-              if (customizePopupDisplayFunction!=window){
-                var customizedDisplayHtml=customizePopupDisplayFunction(feature);
-                layer.bindPopup(customizedDisplayHtml);
-              }
-              else{
-                var defaultDisplayHtml = this._getDefaultPopupDisplay(feature);
-                layer.bindPopup(defaultDisplayHtml);
-              }
-            }
-            layer.on('click', this._clickedMarker.bind(this));  
-          }.bind(this)
-        });
+			_isUrl: function(icon) {
+				var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+				return regexp.test(icon);
+			},
+			_clickedMarker: function(e) {
+				if (this.selectedMarker) {
+					// Reset selected to its actual style
+					this.selectedMarker.setIcon(this.previousIcon);
+				}
+				if (this.selectedMarker != e.target) {
+					this.selectedMarker = e.target;
+					this.previousIcon = e.target.options.icon;
+					this.selectedMarker.setIcon(this.clickedIcon);
+				} else {
+					//if the same marker is clicked
+					this.selectedMarker = undefined;
+				}
+			},
 
-        //cluster markers or not
-        if (this.clusterMarker){
-          this._markerCluster.addLayer(allMarkerData);
-          this.map.addLayer(this._markerCluster);
-        }
-        else{
-          this.layerGroup.addLayer(allMarkerData);
-          this.map.addLayer(this.layerGroup);
-        }
-      },
-      //function to draw cluster pie 
-       _defineClusterIcon:function(cluster) {
-        var customizeColorFunction=function(d) {
-                  return this._customizeGroupPieFunction(d)
-                }.bind(this);
+			_updateMarkers: function() {
+				var allMarkerData = L.geoJson(this.data, {
+					onEachFeature: function(feature, layer) {
+						//if user import iconUrl for customize icon, otherwise default icon
+						var customizedIcon = feature.iconInfo;
+						if (customizedIcon) {
+							var customizeIcon = this._createIcon(feature.iconInfo);
+							layer.setIcon(customizeIcon);
+						}
+						//popup related functions
+						if (this.popup) {
+							var customizePopupDisplayFunction = this._getCustomizedDisplayFunction();
+							if (customizePopupDisplayFunction != window) {
+								var customizedDisplayHtml = customizePopupDisplayFunction(feature);
+								layer.bindPopup(customizedDisplayHtml);
+							} else {
+								var defaultDisplayHtml = this._getDefaultPopupDisplay(feature);
+								layer.bindPopup(defaultDisplayHtml);
+							}
+						}
+						layer.on('click', this._clickedMarker.bind(this));
+					}.bind(this)
+				});
 
-          var children = cluster.getAllChildMarkers(),
-              n = children.length, //Get number of markers in cluster
-              strokeWidth = 1, //Set clusterpie stroke width
-              r = this.rmax-2*strokeWidth-(n<10?12:n<100?8:n<1000?4:0), //Calculate clusterpie radius...
-              iconDim = (r+strokeWidth)*2, //...and divIcon dimensions (leaflet really want to know the size)
-              data = d3.nest() //Build a dataset for the pie chart
-                .key(customizeColorFunction)
-                .entries(children, d3.map),
-              //bake some svg markup
-              html = this._bakeThePie({data: data,
-                                  valueFunc: function(d){return d.values.length;},
-                                  strokeWidth: 1,
-                                  outerRadius: r,
-                                  innerRadius: r-10,
-                                  pieClass: 'cluster-pie',
-                                  pieLabel: n,
-                                  pieLabelClass: 'marker-cluster-pie-label',
-                                  pathStyleFunc: function(d){return d.data.key;},
-                                  pathTitleFunc: function(d){return'testing';}
-                                }),
-              //Create a new divIcon and assign the svg markup to the html property
-              myIcon = new L.DivIcon({
-                  html: html,
-                  className: 'marker-cluster', 
-                  iconSize: new L.Point(iconDim, iconDim)
-              });
-          return myIcon;
-        },
-        _customizeGroupPieFunction:function(d){
-          var customizedPieColorFunction = this._getCustomizedPieColorFunction();
-          if (customizedPieColorFunction!=window){
-            return customizedPieColorFunction(d);
-          }
-          else{
-            return "blue";
-          }
-        },
-        /*function that generates a svg markup for the pie chart*/
-         _bakeThePie: function(options) {
-            /*data and valueFunc are required*/
-            if (!options.data || !options.valueFunc) {
-                return '';
-            }
-            var data = options.data,
-                valueFunc = options.valueFunc,
-                r = options.outerRadius?options.outerRadius:28, //Default outer radius = 28px
-                rInner = options.innerRadius?options.innerRadius:r-10, //Default inner radius = r-10
-                strokeWidth = options.strokeWidth?options.strokeWidth:1, //Default stroke is 1
-                pathStyleFunc = options.pathStyleFunc?options.pathStyleFunc:function(){return 'blue';}, //Class for each path
-                pathTitleFunc = options.pathTitleFunc?options.pathTitleFunc:function(){return '';}, //Title for each path
-                pieClass = options.pieClass?options.pieClass:'marker-cluster-pie', //Class for the whole pie
-                pieLabel = options.pieLabel?options.pieLabel:d3.sum(data,valueFunc), //Label for the whole pie
-                pieLabelClass = options.pieLabelClass?options.pieLabelClass:'marker-cluster-pie-label',//Class for the pie label
-                
-                origo = (r+strokeWidth), //Center coordinate
-                w = origo*2, //width and height of the svg element
-                h = w,
-                donut = d3.layout.pie(),
-                arc = d3.svg.arc().innerRadius(rInner).outerRadius(r);
-                
-            //Create an svg element
-            var svg = document.createElementNS(d3.ns.prefix.svg, 'svg');
-            //Create the pie chart
-            var vis = d3.select(svg)
-                .data([data])
-                .attr('class', pieClass)
-                .attr('width', w)
-                .attr('height', h);
-                
-            var arcs = vis.selectAll('g.arc')
-                .data(donut.value(valueFunc))
-                .enter().append('svg:g')
-                .attr('class', 'arc')
-                .attr('transform', 'translate(' + origo + ',' + origo + ')');
-            
-            arcs.append('svg:path')
-                .attr('fill', pathStyleFunc)
-                .attr('stroke-width', strokeWidth)
-                .attr('d', arc)
-                .append('svg:title')
-                  .text(pathTitleFunc);
-                        
-            vis.append('text')
-                .attr('x',origo)
-                .attr('y',origo)
-                .attr('class', pieLabelClass)
-                .attr('text-anchor', 'middle')
-                .attr('dy','.3em')
-                .text(pieLabel);
-            //Return the svg-markup rather than the actual element
-            return this._serializeXmlNode(svg);
-        },
-        _serializeXmlNode:function(xmlNode) {
-          if (typeof window.XMLSerializer != "undefined") {
-              return (new window.XMLSerializer()).serializeToString(xmlNode);
-          } else if (typeof xmlNode.xml != "undefined") {
-              return xmlNode.xml;
-          }
-          return "";
-        }
-    });
-  </script>
+				//cluster markers or not
+				if (this.clusterMarker) {
+					this._markerCluster.addLayer(allMarkerData);
+					this.map.addLayer(this._markerCluster);
+				} else {
+					this.layerGroup.addLayer(allMarkerData);
+					this.map.addLayer(this.layerGroup);
+				}
+			},
+			//function to draw cluster pie 
+			_defineClusterIcon: function(cluster) {
+				var customizeColorFunction = function(d) {
+					return this._customizeGroupPieFunction(d)
+				}.bind(this);
+
+				var children = cluster.getAllChildMarkers(),
+					n = children.length, //Get number of markers in cluster
+					strokeWidth = 1, //Set clusterpie stroke width
+					r = this.rmax - 2 * strokeWidth - (n < 10 ? 12 : n < 100 ? 8 : n < 1000 ? 4 : 0), //Calculate clusterpie radius...
+					iconDim = (r + strokeWidth) * 2, //...and divIcon dimensions (leaflet really want to know the size)
+					data = d3.nest() //Build a dataset for the pie chart
+					.key(customizeColorFunction)
+					.entries(children, d3.map),
+					//bake some svg markup
+					html = this._bakeThePie({
+						data: data,
+						valueFunc: function(d) {
+							return d.values.length;
+						},
+						strokeWidth: 1,
+						outerRadius: r,
+						innerRadius: r - 10,
+						pieClass: 'cluster-pie',
+						pieLabel: n,
+						pieLabelClass: 'marker-cluster-pie-label',
+						pathStyleFunc: function(d) {
+							return d.data.key;
+						},
+						pathTitleFunc: function(d) {
+							return 'testing';
+						}
+					}),
+					//Create a new divIcon and assign the svg markup to the html property
+					myIcon = new L.DivIcon({
+						html: html,
+						className: 'marker-cluster',
+						iconSize: new L.Point(iconDim, iconDim)
+					});
+				return myIcon;
+			},
+			_customizeGroupPieFunction: function(d) {
+				var customizedPieColorFunction = this._getCustomizedPieColorFunction();
+				if (customizedPieColorFunction != window) {
+					return customizedPieColorFunction(d);
+				} else {
+					return "blue";
+				}
+			},
+			/*function that generates a svg markup for the pie chart*/
+			_bakeThePie: function(options) {
+				/*data and valueFunc are required*/
+				if (!options.data || !options.valueFunc) {
+					return '';
+				}
+				var data = options.data,
+					valueFunc = options.valueFunc,
+					r = options.outerRadius ? options.outerRadius : 28, //Default outer radius = 28px
+					rInner = options.innerRadius ? options.innerRadius : r - 10, //Default inner radius = r-10
+					strokeWidth = options.strokeWidth ? options.strokeWidth : 1, //Default stroke is 1
+					pathStyleFunc = options.pathStyleFunc ? options.pathStyleFunc : function() {
+						return 'blue';
+					}, //Class for each path
+					pathTitleFunc = options.pathTitleFunc ? options.pathTitleFunc : function() {
+						return '';
+					}, //Title for each path
+					pieClass = options.pieClass ? options.pieClass : 'marker-cluster-pie', //Class for the whole pie
+					pieLabel = options.pieLabel ? options.pieLabel : d3.sum(data, valueFunc), //Label for the whole pie
+					pieLabelClass = options.pieLabelClass ? options.pieLabelClass : 'marker-cluster-pie-label', //Class for the pie label
+
+					origo = (r + strokeWidth), //Center coordinate
+					w = origo * 2, //width and height of the svg element
+					h = w,
+					donut = d3.layout.pie(),
+					arc = d3.svg.arc().innerRadius(rInner).outerRadius(r);
+
+				//Create an svg element
+				var svg = document.createElementNS(d3.ns.prefix.svg, 'svg');
+				//Create the pie chart
+				var vis = d3.select(svg)
+					.data([data])
+					.attr('class', pieClass)
+					.attr('width', w)
+					.attr('height', h);
+
+				var arcs = vis.selectAll('g.arc')
+					.data(donut.value(valueFunc))
+					.enter().append('svg:g')
+					.attr('class', 'arc')
+					.attr('transform', 'translate(' + origo + ',' + origo + ')');
+
+				arcs.append('svg:path')
+					.attr('fill', pathStyleFunc)
+					.attr('stroke-width', strokeWidth)
+					.attr('d', arc)
+					.append('svg:title')
+					.text(pathTitleFunc);
+
+				vis.append('text')
+					.attr('x', origo)
+					.attr('y', origo)
+					.attr('class', pieLabelClass)
+					.attr('text-anchor', 'middle')
+					.attr('dy', '.3em')
+					.text(pieLabel);
+				//Return the svg-markup rather than the actual element
+				return this._serializeXmlNode(svg);
+			},
+			_serializeXmlNode: function(xmlNode) {
+				if (typeof window.XMLSerializer != "undefined") {
+					return (new window.XMLSerializer()).serializeToString(xmlNode);
+				} else if (typeof xmlNode.xml != "undefined") {
+					return xmlNode.xml;
+				}
+				return "";
+			}
+		});
+
+	</script>
 </dom-module>
-

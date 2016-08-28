@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <link rel="import" href="../../../polymer/polymer.html">
 <link rel="import" href="map-legend-detail.html">
 <link rel="import" href="../mapbox-behaviors/mapbox-behaviors.html">
@@ -12,162 +12,159 @@ The `map-legend` element defines the legend at the bottom of the map.
     </map-legend>
 @demo
 -->
-
 <dom-module id="map-legend">
-  <template is="dom-bind">
+	<template>
+		<style>
+			:host {
+				width: 100%;
+			}
 
-    <style>
-      :host {
-       width:100%;
-      }    
+		</style>
+		<template is="dom-if" if="{{!selectedExist}}">
+			<div style="flex-direction:column; display:inline-flex;margin-right:5px;width:75%;height:100%;">
+				<div style="display:flex;margin-bottom:5px;height:20%;margin: 0 10%;">
+					<h1>{{detailTitle}}</h1>
+				</div>
+				<div style="display:flex;height:80%;flex-direction:row; display:inline-flex;margin:0 10%;">
+					<template is="dom-repeat" items="{{legendInfo.arrayOfItems}}" as="eachDetail">
+						<map-legend-detail number="{{eachDetail.count}}" label="{{eachDetail.label}}" icon="{{eachDetail.icon}}">
+						</map-legend-detail>
+					</template>
+				</div>
+			</div>
+			<div style="display:inline-flex;flex-direction:column; height:100%;width:24%;">
+				<div style="height:20%">
+					<h1>Total Devices</h1>
+				</div>
+				<div style="height:80%;">
+					<div>
+						<h1 style="font-size:60px;">{{legendInfo.totalCount}}</h1>
+					</div>
+				</div>
+			</div>
+		</template>
+		<template is="dom-if" if="{{selectedExist}}">
+			<div style="flex-direction:row; flex-wrap:wrap;display:inline-flex;width:100%;">
+				<div style="  display: inline-flex; flex-flow: column wrap; width:70%; align-content: flex-start;max-height:200px;">
+					<template is="dom-repeat" items="{{_arrayToDisplay}}" as="attribute">
+						<p> <b>{{attribute.name}} </b>: {{attribute.value}} &nbsp;&nbsp;&nbsp; </p>
+					</template>
+				</div>
 
-    </style>
-    <template is="dom-if" if="{{!selectedExist}}">
-      <div style="flex-direction:column; display:inline-flex;margin-right:5px;width:75%;height:100%;">
-        <div style="display:flex;margin-bottom:5px;height:20%;margin: 0 10%;">
-          <h1>{{detailTitle}}</h1>
-        </div>
-        <div style="display:flex;height:80%;flex-direction:row; display:inline-flex;margin:0 10%;">
-          <template is="dom-repeat" items="{{legendInfo.arrayOfItems}}" as="eachDetail">
-            <map-legend-detail number="{{eachDetail.count}}" label="{{eachDetail.label}}" icon="{{eachDetail.icon}}"></map-legend-detail>
-          </template>
-        </div>
-      </div>
+				<div style="width:30%;">
+					<px-dropdown id="dropDownOfSelectedDevicesComponent" display-value="{{dropDownConfig.display-value}}">
+						<px-dropdown-content max-cont-character-width="{{dropDownConfig.max-cont-character-width}}" extend-dropdown="{{dropDownConfig.extend-dropdown}}" extend-dropdown-by="{{dropDownConfig.extend-dropdown-by}}" items="{{dropDownConfig.items}}">
+						</px-dropdown-content>
+					</px-dropdown>
+				</div>
+			</div>
+		</template>
+	</template>
+	<script>
+		HTMLImports.whenReady(function() {
+			Polymer({
+				is: "map-legend",
+				properties: {
+					legendInfo: {
+						type: Object,
+						value: function() {
+							return {};
+						},
+						notify: true
+					},
+					selectedExist: {
+						type: Boolean,
+						value: false,
+						notify: true
+					},
+					individualFeatureInfo: {
+						type: Object,
+						notify: true,
+						observer: "_individualFeatureInfoChanged"
+					},
+					_arrayToDisplay: {
+						type: Array,
+						value: function() {
+							return [];
+						},
+						notify: true
+					},
+					dropDownConfig: {
+						type: Object,
+						value: function() {
+							return {};
+						},
+						notify: true
+					}
+				},
 
-      <div style="display:inline-flex;flex-direction:column; height:100%;width:24%;">
-        <div style="height:20%"><h1>Total Devices</h1></div>
-        <div style="height:80%;">
-          <div><h1 style="font-size:60px;">{{legendInfo.totalCount}}</h1>
-          </div>
-        </div>
-      </div>
-    </template>
-    <template is="dom-if" if="{{selectedExist}}">
-      <div style="flex-direction:row; flex-wrap:wrap;display:inline-flex;width:100%;">
-      <div style="  display: inline-flex; flex-flow: column wrap; width:70%; align-content: flex-start;max-height:200px;">
-       <template is="dom-repeat" items="{{_arrayToDisplay}}" as="attribute">
-        <p>   <b>{{attribute.name}} </b>: {{attribute.value}} &nbsp;&nbsp;&nbsp;  </p>
-      </template>
-    </div>
+				listeners: {
+					'change': '_handleDropDownClicked'
+				},
+				_addedDeviceClicked: function() {
+					this.fire('add-device-clicked', {
+						"marker": this.individualFeatureInfo
+					});
+				},
+				_handleDropDownClicked: function(evt) {
+					var textValueSelected = evt.srcElement.value;
+					var dropDownValueAndFeature = {
+						"textValue": textValueSelected,
+						"featureSelected": this.individualFeatureInfo
+					};
+					this.fire('legendDropdownValueChanged', dropDownValueAndFeature);
+					var selected = document.getElementById("dropDownOfSelectedDevicesComponent").selectedKey;
+				},
+				_individualFeatureInfoChanged: function(changes) {
+					if (changes) {
+						this.selectedExist = true;
+						var customizeGetLegendFunction = this._getCustomizedLegendFunction();
+						if (customizeGetLegendFunction != window) {
+							this._arrayToDisplay = customizeGetLegendFunction(changes);
+						} else {
+							this._arrayToDisplay = this._getLegendMarkerDisplay(changes);
+						}
+					} else {
+						this.selectedExist = false;
+					}
+				},
+				_getCustomizedLegendFunction: function() {
+					return this._resolveFunctionOnWidow('custom-legend-display-function');
+				},
+				_resolveFunctionOnWidow: function(functionInput) {
+					customFunction = window;
+					var customizeFunction = this[functionInput];
+					var customizeFunction = this.attributes[functionInput];
+					if (customizeFunction) {
+						customFunctionFullPath = customizeFunction.value.split(".");
+						for (i in customFunctionFullPath) {
+							customFunction = customFunction[customFunctionFullPath[i]];
+							if (customFunction === undefined) {
+								console.warn("px-map: Custom function was used, but was not found on window. Is the path correct?");
+								return null;
+							}
+						}
+					}
+					return customFunction;
+				},
+				_getLegendMarkerDisplay: function(marker) {
+					var props = marker.feature.properties;
+					var attrs = Object.keys(props);
+					var attribute;
+					var value;
+					var displayArray = [];
+					for (var i = 0; i < attrs.length; i += 1) {
+						attribute = attrs[i];
+						var eachPair = {
+							"name": attribute,
+							"value": props[attribute]
+						};
+						displayArray.push(eachPair);
+					}
+					return displayArray;
+				}
+			});
+		});
 
-    <div style="width:30%;">
-      <px-dropdown id="dropDownOfSelectedDevicesComponent" display-value="{{dropDownConfig.display-value}}">
-          <px-dropdown-content max-cont-character-width="{{dropDownConfig.max-cont-character-width}}" extend-dropdown="{{dropDownConfig.extend-dropdown}}" extend-dropdown-by="{{dropDownConfig.extend-dropdown-by}}" items="{{dropDownConfig.items}}">
-          </px-dropdown-content>
-      </px-dropdown>
-    </div>
-  </div>
-    </template>
-  </template>
-  <script>
-    HTMLImports.whenReady(function() {
-      Polymer({
-        is: "map-legend",
-        properties: {
-          legendInfo:{
-            type:Object,
-            value: function() {
-              return {};
-            },
-            notify:true
-          },
-          selectedExist:{
-            type:Boolean,
-            value:false,
-            notify:true
-          },
-          individualFeatureInfo:{
-            type:Object,
-            notify:true,
-            observer: "_individualFeatureInfoChanged"
-          },
-          _arrayToDisplay:{
-            type:Array,
-            value: function() {
-              return [];
-            },
-            notify:true
-          },
-          dropDownConfig:{
-            type:Object,
-            value: function() {
-              return {};
-            },
-            notify:true
-          }
-        },
-
-        listeners: {
-          'change':'_handleDropDownClicked'
-        },
-        _addedDeviceClicked:function(){
-          this.fire('add-device-clicked', 
-            {"marker":this.individualFeatureInfo});
-        },
-        attached:function(){
-
-        },
-      _handleDropDownClicked:function(evt){
-        var textValueSelected = evt.srcElement.value;
-        var dropDownValueAndFeature={"textValue":textValueSelected,"featureSelected":this.individualFeatureInfo};
-        this.fire('legendDropdownValueChanged',dropDownValueAndFeature);
-        var selected=document.getElementById("dropDownOfSelectedDevicesComponent").selectedKey;
-      },
-        _individualFeatureInfoChanged:function(changes){
-          if (changes){
-            this.selectedExist=true;
-            var customizeGetLegendFunction=this._getCustomizedLegendFunction();
-            if (customizeGetLegendFunction!=window){
-              this._arrayToDisplay=customizeGetLegendFunction(changes);
-            }
-            else{
-              this._arrayToDisplay = this._getLegendMarkerDisplay(changes);
-            }
-          }
-          else{
-            this.selectedExist=false;
-          }
-        },
-      _getCustomizedLegendFunction:function(){
-        return this._resolveFunctionOnWidow('custom-legend-display-function');
-      },
-      _resolveFunctionOnWidow:function(functionInput){
-        customFunction=window;
-        var customizeFunction=this[functionInput];
-        var customizeFunction=this.attributes[functionInput];
-        if (customizeFunction){
-        customFunctionFullPath = customizeFunction.value.split(".");
-        for(i in customFunctionFullPath) {
-            customFunction = customFunction[customFunctionFullPath[i]];
-            if(customFunction === undefined) {
-              console.warn("px-map: Custom function was used, but was not found on window. Is the path correct?");
-              return null;
-            }
-          }
-        }
-          return customFunction;
-      },
-      _getAttributesFromObject:function(objectInput){
-
-      },
-      _getLegendMarkerDisplay:function(marker){
-        var props = marker.feature.properties;
-        var attrs = Object.keys(props);
-        var attribute;
-        var value;
-        var displayArray=[]; 
-        for (var i = 0; i < attrs.length; i += 1) {
-            attribute = attrs[i];
-            if (typeof(props[attribute])==Object){
-              _getAttributesFromObject=this._getAttributesFromObject(props[attribute]);
-            }
-            var eachPair={"name":attribute,"value":props[attribute]};
-            displayArray.push(eachPair);
-        }
-        return displayArray;
-      }
-
-      });
-    });
-  </script>
+	</script>
 </dom-module>
