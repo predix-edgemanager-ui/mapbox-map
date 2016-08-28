@@ -1,6 +1,6 @@
-#px-vis-pie-chart
+#px-map
 ==========================================
-
+[![px-map demo](px-map.png?raw=true)]
 ## Overview
 
 px-map is a Predix UI component
