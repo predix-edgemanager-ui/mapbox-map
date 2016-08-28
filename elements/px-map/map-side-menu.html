@@ -1,6 +1,5 @@
-
+<!DOCTYPE html>
 <link rel="import" href="../../../polymer/polymer.html">
-
 <!--
 The `map-legend-detail` element is used by map-legend to create individual element detail
 <br><b>Example</b> - 
@@ -9,100 +8,104 @@ The `map-legend-detail` element is used by map-legend to create individual eleme
 -->
 
 <dom-module id="map-side-menu">
-    <style>
-      :host {
-        background: rgba(255, 255, 255, 1);
-        opacity: .6;
-        width: 400px;
-        height: 600px;
-        height: 78vh;
-        position: absolute;
-        left: -400px;
-        z-index: 1;
-        transition: .5s left;
-        padding: 20px;
-        box-sizing: border-box;
-      }    
-    </style>
-    <link rel="stylesheet" href="map-component.css">
+	<style>
+		:host {
+			background: rgba(255, 255, 255, 1);
+			opacity: .6;
+			width: 400px;
+			height: 600px;
+			height: 78vh;
+			position: absolute;
+			left: -400px;
+			z-index: 1;
+			transition: .5s left;
+			padding: 20px;
+			box-sizing: border-box;
+		}
 
-  <template is="dom-bind">
-        <div class="sideMenuOpener">
-          <span>Selected</span>
-        </div>
-          <div id="sideMenuContainer" style="flex-direction:col;overflow-y: scroll;">
-            <div id="contentOfSelectedDevices" style="height: 60vh;">
-              <h2>Selected Devices</h2>
-              <ul>
-                <template is="dom-repeat" items="{{selectedFeatures}}" as="item">
-                  <li style='flex-direction:col; display:inline-flex;width:100%;'>
-                    <div style='width:20%;'><i class="fa fa-exclamation-triangle fa-4x" style="color:red;" aria-hidden="true"></i></div>
-                    <div on-click="_moveMap" style='width:70%;'id="selectedDeviceList">
-                    <template is="dom-repeat" items="{{_toArray(item.properties)}}" as="attribute">
-                      <span>{{attribute.name}}: </span> <span>{{attribute.value}}<br></span>
-                    </template>
-                    </div>
-                    <div><button id='button' on-click="deleteFeature"><i class='fa fa-times' aria-hidden='true'></i></button></div>
-                  </li>
-              </template>
-              </ul>
-            </div>
-            <div id="dropDownOfSelectedDevices" style="position:absolute;bottom:5%;left:40%;">
-              <px-dropdown id="dropDownOfSelectedDevicesComponent" hidden$="{{hideDropDownMenu}}"  display-value="{{sideMenuDropdown.display-value}}">
-                <px-dropdown-content max-cont-character-width="{{sideMenuDropdown.max-cont-character-width}}" extend-dropdown="{{sideMenuDropdown.extend-dropdown}}" extend-dropdown-by="{{sideMenuDropdown.extend-dropdown-by}}" items="{{sideMenuDropdown.items}}">
-                </px-dropdown-content>
-            </px-dropdown>
-          </div>
-<!--           <div hidden$="{{!hideDropDownMenu}}" style="position:absolute;bottom:5%;left:60%;">
+	</style>
+	<link rel="stylesheet" href="map-component.css">
+
+	<template>
+		<div class="sideMenuOpener">
+			<span>Selected</span>
+		</div>
+		<div id="sideMenuContainer" style="flex-direction:col;overflow-y: scroll;">
+			<div id="contentOfSelectedDevices" style="height: 60vh;">
+				<h2>Selected Devices</h2>
+				<ul>
+					<template is="dom-repeat" items="{{selectedFeatures}}" as="item">
+						<li style="flex-direction:col; display:inline-flex;width:100%;">
+							<div style="width:20%;"><i class="fa fa-exclamation-triangle fa-4x" style="color:red;" aria-hidden="true"></i></div>
+							<div on-click="_moveMap" style="width:70%;" id="selectedDeviceList">
+								<template is="dom-repeat" items="{{_toArray(item.properties)}}" as="attribute">
+									<span>{{attribute.name}}: </span> <span>{{attribute.value}}<br></span>
+								</template>
+							</div>
+							<div>
+								<button id="button" on-click="deleteFeature"><i class="fa fa-times" aria-hidden="true"></i></button>
+							</div>
+						</li>
+					</template>
+				</ul>
+			</div>
+			<div id="dropDownOfSelectedDevices" style="position:absolute;bottom:5%;left:40%;">
+				<px-dropdown id="dropDownOfSelectedDevicesComponent" hidden$="{{hideDropDownMenu}}" display-value="{{sideMenuDropdown.display-value}}">
+					<px-dropdown-content max-cont-character-width="{{sideMenuDropdown.max-cont-character-width}}" extend-dropdown="{{sideMenuDropdown.extend-dropdown}}" extend-dropdown-by="{{sideMenuDropdown.extend-dropdown-by}}" items="{{sideMenuDropdown.items}}">
+					</px-dropdown-content>
+				</px-dropdown>
+			</div>
+			<!--           <div hidden$="{{!hideDropDownMenu}}" style="position:absolute;bottom:5%;left:60%;">
             <button id="submit">
               Submit
             </button>
           </div> -->
-        </div>
-  </template>
-  <script>
-    HTMLImports.whenReady(function() {
-      Polymer({
-        is: "map-side-menu",
-        properties: {
-          number: {
-            type: Number,
-            value: 0
-          },
-          label:{
-            type:String,
-            value:""
-          },
-          selectedFeatures:{
-            type:Array,
-            value: function() {
-                return [];
-            },
-            notify:true        
-          },
-          sideMenuDropdown:{
-            type:Array,
-            value: function() {
-                return [];
-            },
-            notify:true        
-          }
-        },
-        ready:function(){
-          var test =document.querySelector('#selectedDeviceList');
-        },
-        deleteFeature:function(e){
-          this.splice('selectedFeatures',e.model.index, 1);
-        },
-        _toArray: function(obj) {
-            return Object.keys(obj).map(function(key) {
-                return {
-                    name: key,
-                    value: obj[key]
-                };
-            });
-        }
-      });
-    });
-  </script>
+		</div>
+	</template>
+	<script>
+		HTMLImports.whenReady(function() {
+			Polymer({
+				is: "map-side-menu",
+				properties: {
+					number: {
+						type: Number,
+						value: 0
+					},
+					label: {
+						type: String,
+						value: ""
+					},
+					selectedFeatures: {
+						type: Array,
+						value: function() {
+							return [];
+						},
+						notify: true
+					},
+					sideMenuDropdown: {
+						type: Array,
+						value: function() {
+							return [];
+						},
+						notify: true
+					}
+				},
+				ready: function() {
+					var test = document.querySelector('#selectedDeviceList');
+				},
+				deleteFeature: function(e) {
+					this.splice('selectedFeatures', e.model.index, 1);
+				},
+				_toArray: function(obj) {
+					return Object.keys(obj).map(function(key) {
+						return {
+							name: key,
+							value: obj[key]
+						};
+					});
+				}
+			});
+		});
+
+	</script>
 </dom-module>

@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <link rel="import" href="../../../polymer/polymer.html">
 <link rel="import" href="../mapbox-behaviors/mapbox-behaviors.html">
 <link rel="import" href="../mapbox-import/mapbox-import.html">
@@ -11,280 +12,321 @@ The `user-usage` element is an example of how one user would use the current map
 -->
 
 
-<dom-module id="user-usage"> 
-  <template>
-    <iron-ajax
-      id="fetchMapFeatures"
-      url="backEndData.json"
-      handle-as="json"
-      on-response="_handleFetchInitialDataResponse"      
-    auto>
-    </iron-ajax>
-   <style>
-    px-map {
-      display: block;
-      height: 100%;
-      width: 100%;
-    }
-  </style>
-  <div style="flex flex--row">
-    <div style="height:80vh;">  
-      <px-map 
-        no-wrap
-        id="mapContainer"
-        zoom="1"
-        latitude="37.77493" 
-        longitude="-122.41942"
-        layer="roadtrippers.ijjip7cb"
-        selected-features="{{selectedFeatures}}"
-        zoomable
-        side-menu-dropdown="{{sideMenuDropdown}}">
-        <marker-layer 
-          selected-marker="{{markerClicked}}" 
-          cluster-marker legend-info="{{legendInfo}}" 
-          custom-pie-color-function="myMap.customPieColorFunction" 
-          custom-legend-function="myMap.customizedLegendInfo"
-          data='{{inputData}}' 
-          selected-icon="{{selectedIcon}}">
-        </marker-layer>
-      </px-map>
-    </div>
-  <div style="height:20vh";> 
-    <map-legend id="legendBox" legend-info="[[legendInfo]]" individual-feature-info="[[markerClicked]]" detail-title="All Devices" drop-down-config="{{dropDownConfig}}">
-    </map-legend>
-  </div>
-</div>
+<dom-module id="user-usage">
+	<template>
+		<iron-ajax id="fetchMapFeatures" url="backEndData.json" handle-as="json" on-response="_handleFetchInitialDataResponse" auto>
+		</iron-ajax>
+		<style>
+			px-map {
+				display: block;
+				height: 100%;
+				width: 100%;
+			}
 
- </template>
-  <script>
-    window.myMap = {
-      //user definied method to display content in the popup
-      displayPopup: function(marker) {
-        return "<div>" + marker.properties.status.device_status + "</div>";
-      },
-      //user definied method to define pie color attribute
-      customPieColorFunction:function(d){
-        var deviceStatus = d.feature.properties.status.device_status.toLowerCase();
-        if (deviceStatus=="reachable"){
-          return "blue";
-        }
-        else if (deviceStatus=="unreachable"){
-          return "red";
-        }
-        else if (deviceStatus=="unassigned"){
-          return "yellow";
-        }
-      },
-      //user defined method to display marker info on the legend
-      displayLegend:function(marker){
-        var props = marker.feature.properties;
-        var attrs = Object.keys(props);
-        var attribute;
-        var value;
-        var displayArray=[]; 
-        for (var i = 0; i < attrs.length; i += 1) {
-            attribute = attrs[i];
-            var eachPair={"name":"test","value":props[attribute]};
-            displayArray.push(eachPair);
-        }
-        return displayArray;
-      },
+		</style>
+		<div style="flex flex--row">
+			<div style="height:80vh;">
+				<px-map no-wrap id="mapContainer" zoom="1" latitude="37.77493" longitude="-122.41942" layer="roadtrippers.ijjip7cb" selected-features="{{selectedFeatures}}" zoomable side-menu-dropdown="{{sideMenuDropdown}}">
+					<marker-layer selected-marker="{{markerClicked}}" cluster-marker legend-info="{{legendInfo}}" custom-pie-color-function="myMap.customPieColorFunction" custom-legend-function="myMap.customizedLegendInfo" data="{{inputData}}" selected-icon="{{selectedIcon}}">
+					</marker-layer>
+				</px-map>
+			</div>
+			<div style="height:20vh;">
+				<map-legend id="legendBox" legend-info="[[legendInfo]]" individual-feature-info="[[markerClicked]]" detail-title="All Devices" drop-down-config="{{dropDownConfig}}">
+				</map-legend>
+			</div>
+		</div>
 
-      customizedLegendInfo:function(map){
-          bounds = map.getBounds();
-          var toBeDisplayedOnLegend;
-          map.eachLayer(function (layer) {
-            if (layer._layers){
-              //when markers are in layerGroup, it is not in feature group, so need to check the case when markers are not clustered and are in layergroup. Need further improvement
-              var lenOfMarkers = Object.keys(layer._layers).length;
-              if (lenOfMarkers==1){
-                var obj = layer._layers;
-                var wrongLayer = obj[Object.keys(obj)[0]]._layers ? true : false; 
-              }
-            }
-            else{
-              var lenOfMarkers=0;
-            }
-            if (layer._featureGroup || (lenOfMarkers!=0 && !wrongLayer)){
-              var totalCount=0;
-              var reachableCount=0;
-              var unreachableCount=0;
-              var unassignedCount=0;
-             layer.eachLayer(function(marker) {
-                if (bounds.contains(marker.getLatLng())) {
-                  totalCount+=1;
-                  if (marker.feature.properties.status.device_status=="REACHABLE"){
-                    reachableCount+=1;
-                  }
-                  else if (marker.feature.properties.status.device_status=="UNREACHABLE"){
-                    unreachableCount+=1;
-                  }
-                  else if (marker.feature.properties.status.device_status=="UNASSIGNED"){
-                    unassignedCount+=1;
-                  }
-                }
-              });
-             toBeDisplayedOnLegend= {"arrayOfItems":[{"label":"Reachable","count":reachableCount,"icon":"http://a2.mzstatic.com/us/r30/Purple3/v4/9c/e8/85/9ce8858b-6037-d564-8568-96a1b4bd6562/icon350x350.jpeg"},{"label":"Unassigned","count":unassignedCount,"icon":"http://icons.apnic.net/s/en/2171/31/_/images/icons/profilepics/anonymous.png"},{"label":"Uneachable","count":unreachableCount,"icon":"https://cdn3.iconfinder.com/data/icons/rcons-user-profession/32/repairer-128.png"}],"totalCount":totalCount};
-            }
-         });
-        return toBeDisplayedOnLegend;
-      }
-    };
-    HTMLImports.whenReady(function() {
-      Polymer({
-        is: "user-usage",
-        properties: {
-         /**
-           *LegendInfo is user defined for <map-legend legend-info="{{legendInfo}}"> Use custom-legend-function="functionToDefine *WhatToShowOnTheLegend" to define and send data back to the component to display data. 
-           * @type Array
-           */
-          legendInfo:{
-            type:Array
-          },
-         /**
-           *SelectedFeatures is user defined and is used in px-map to show all the features that are selected and grouped together.
-           * <px-map selected-features="{{selectedFeatures}}">
-           * @type Array
-           */
-          selectedFeatures:{
-            type:Array,
-            value: function() {
-              return [];
-            },
-            notify:true
-          },
-          /**
-           *dropDownConfig  is user defined and is used to define the dropdown configuration of legend box.
-           * @type Array
-           */
-          dropDownConfig:{
-            type:Object,
-            value: function() {
-              return {};
-            },
-            notify:true
-          },
-          /**
-           *inputData is the data that need to be imported to marker-layer to display marker 
-           * @type Array
-           */
-          inputData:{
-            type:Array,
-            value: function() {
-              return [];
-            },
-            notify:true
-          }
-        },
-        listeners: {
-          'add-device-clicked':'_addedDeviceClickedListener',
-          'legendDropdownValueChanged':'_legendDropdownSelected',
-          'map-changed':'_onMapChanged'
-        },
-        ready: function() {
-          //user can set customize icon when a icon is clicked on
-          this.selectedIcon={'color':'red','icon':'http://downloadicons.net/sites/default/files/check--selected-icon-67566.png',"iconHeight":20,"iconWidth":20};
-          //user needs to provide all dropdown menu content
-          this.dropDownConfig={"items":[{"key":"issueCommand", "val": "Issue Command"},{"key":"addDevice", "val": "Add Device"}, {"key":"RunDiagnostic", "val": "Run Diagnostic"}, {"key":"assignTechnician", "val": "Assign Technician"}],"max-cont-character-width":10,"extend-dropdown":true,"extend-dropdown-by":15,'display-value':"Action on Device"};
-          this.sideMenuDropdown={"items":[{"key":"issueCommand", "val": "Issue Command"}, {"key":"RunDiagnostic", "val": "Run Diagnostic"}, {"key":"assignTechnician", "val": "Assign Technician"}],"max-cont-character-width":10,"extend-dropdown":true,"extend-dropdown-by":15,'display-value':"Action on Selected Device"};
-        },
-        _handleFetchInitialDataResponse:function(e){
-          var response = e.detail.response;
-          this._convertResponseToFeature(response);
-        },
-        /**
-         * Function to convert input data to feature type data
-         * @input json
-         * @return geoJSON
-         */
-        _convertResponseToFeature:function(response){
-          featureArray=[];
-          for (var i=0 ; i<response.length ; i++){
-            var lat = response[i].latitude;
-            var lng = response[i].longitude;
-            var eachFeature = {
-            "type": "Feature",
-            "properties": response[i].device,
-            "iconInfo":this._getIconInfo(response[i]),
-            "geometry": {
-                  "type": "Point",
-                  "coordinates": [lng, lat]
-              }
-            };
-            featureArray.push(eachFeature);
-          }
-          this.set('inputData',featureArray);
-        },
-        /**
-         * User define function to assign iconInfo to individual icon
-         * @input each Object
-         * @return icon information
-         */
-        _getIconInfo:function(eachDevice){
-          var status = eachDevice.device.status.device_status;
-          if (status=="REACHABLE"){
-            return {"icon":"http://a2.mzstatic.com/us/r30/Purple3/v4/9c/e8/85/9ce8858b-6037-d564-8568-96a1b4bd6562/icon350x350.jpeg","iconHeight":20,"iconWidth":20};
-          }
-          else if (status=="UNREACHABLE"){
-            return {"icon":"https://cdn3.iconfinder.com/data/icons/rcons-user-profession/32/repairer-128.png","iconHeight":20,"iconWidth":20};
-          }
-          else if (status=="UNASSIGNED"){
-            return {"icon":"http://icons.apnic.net/s/en/2171/31/_/images/icons/profilepics/anonymous.png","iconHeight":20,"iconWidth":20};
-          }
-        },
-        _onMapChanged:function(evt){
-          var bound = evt.detail.bound;
-           this.debounce('debounceMapMovement',function() {
-              this._fetchFeatureBaseOnMapBound(bound);
-            }, 1000);
-          },
-        /**
-         * function to take in bound information and user can use the information
-         * @input bound info
-         */
-        _fetchFeatureBaseOnMapBound:function(bound){
-          var NELat = bound._northEast.lat;
-          var NELng = bound._northEast.lng;
-          var SELat = bound._southWest.lat;
-          var SELng = bound._southWest.lng;
-          //Fake API call with random
-          // var test=Math.floor((Math.random() * 100) + 1);
-          // if (test > 50){
-          //   this.$.fetchMapFeatures.url="initialData.json";
-          //   this.$.fetchMapFeatures.generateRequest();
+	</template>
+	<script>
+		window.myMap = {
+			//user definied method to display content in the popup
+			displayPopup: function(marker) {
+				return "<div>" + marker.properties.status.device_status + "</div>";
+			},
+			//user definied method to define pie color attribute
+			customPieColorFunction: function(d) {
+				var deviceStatus = d.feature.properties.status.device_status.toLowerCase();
+				if (deviceStatus == "reachable") {
+					return "blue";
+				} else if (deviceStatus == "unreachable") {
+					return "red";
+				} else if (deviceStatus == "unassigned") {
+					return "yellow";
+				}
+			},
+			//user defined method to display marker info on the legend
+			displayLegend: function(marker) {
+				var props = marker.feature.properties;
+				var attrs = Object.keys(props);
+				var attribute;
+				var value;
+				var displayArray = [];
+				for (var i = 0; i < attrs.length; i += 1) {
+					attribute = attrs[i];
+					var eachPair = {
+						"name": "test",
+						"value": props[attribute]
+					};
+					displayArray.push(eachPair);
+				}
+				return displayArray;
+			},
 
-          // }
-          // else{
-          //   this.$.fetchMapFeatures.url="backEndData.json";
-          //   this.$.fetchMapFeatures.generateRequest();
-          // } 
-        },
-        /**
-         * listener for legend dropdown selection
-         * @input {featureSelected:object,textValue:"textValue of DropDown"}
-         */
-        _legendDropdownSelected:function(evt){
-          var valueClicked = evt.detail.textValue;
-          var feature=evt.detail.featureSelected.feature;
-          var id =feature.properties.id;
-          if (valueClicked == "Add Device"){
-            var found = _.findIndex(this.selectedFeatures, function(feature) { return feature.properties.id == id; });
-            if (found==-1){
-              this.push('selectedFeatures',feature);
-            }
-          }
-          else if (valueClicked == "Issue Command"){
+			customizedLegendInfo: function(map) {
+				bounds = map.getBounds();
+				var toBeDisplayedOnLegend;
+				map.eachLayer(function(layer) {
+					if (layer._layers) {
+						//when markers are in layerGroup, it is not in feature group, so need to check the case when markers are not clustered and are in layergroup. Need further improvement
+						var lenOfMarkers = Object.keys(layer._layers).length;
+						if (lenOfMarkers == 1) {
+							var obj = layer._layers;
+							var wrongLayer = obj[Object.keys(obj)[0]]._layers ? true : false;
+						}
+					} else {
+						var lenOfMarkers = 0;
+					}
+					if (layer._featureGroup || (lenOfMarkers != 0 && !wrongLayer)) {
+						var totalCount = 0;
+						var reachableCount = 0;
+						var unreachableCount = 0;
+						var unassignedCount = 0;
+						layer.eachLayer(function(marker) {
+							if (bounds.contains(marker.getLatLng())) {
+								totalCount += 1;
+								if (marker.feature.properties.status.device_status == "REACHABLE") {
+									reachableCount += 1;
+								} else if (marker.feature.properties.status.device_status == "UNREACHABLE") {
+									unreachableCount += 1;
+								} else if (marker.feature.properties.status.device_status == "UNASSIGNED") {
+									unassignedCount += 1;
+								}
+							}
+						});
+						toBeDisplayedOnLegend = {
+							"arrayOfItems": [{
+								"label": "Reachable",
+								"count": reachableCount,
+								"icon": "http://a2.mzstatic.com/us/r30/Purple3/v4/9c/e8/85/9ce8858b-6037-d564-8568-96a1b4bd6562/icon350x350.jpeg"
+							}, {
+								"label": "Unassigned",
+								"count": unassignedCount,
+								"icon": "http://icons.apnic.net/s/en/2171/31/_/images/icons/profilepics/anonymous.png"
+							}, {
+								"label": "Uneachable",
+								"count": unreachableCount,
+								"icon": "https://cdn3.iconfinder.com/data/icons/rcons-user-profession/32/repairer-128.png"
+							}],
+							"totalCount": totalCount
+						};
+					}
+				});
+				return toBeDisplayedOnLegend;
+			}
+		};
+		HTMLImports.whenReady(function() {
+			Polymer({
+				is: "user-usage",
+				properties: {
+					/**
+					 *LegendInfo is user defined for <map-legend legend-info="{{legendInfo}}"> Use custom-legend-function="functionToDefine *WhatToShowOnTheLegend" to define and send data back to the component to display data. 
+					 * @type Array
+					 */
+					legendInfo: {
+						type: Array
+					},
+					/**
+					 *SelectedFeatures is user defined and is used in px-map to show all the features that are selected and grouped together.
+					 * <px-map selected-features="{{selectedFeatures}}">
+					 * @type Array
+					 */
+					selectedFeatures: {
+						type: Array,
+						value: function() {
+							return [];
+						},
+						notify: true
+					},
+					/**
+					 *dropDownConfig  is user defined and is used to define the dropdown configuration of legend box.
+					 * @type Array
+					 */
+					dropDownConfig: {
+						type: Object,
+						value: function() {
+							return {};
+						},
+						notify: true
+					},
+					/**
+					 *inputData is the data that need to be imported to marker-layer to display marker 
+					 * @type Array
+					 */
+					inputData: {
+						type: Array,
+						value: function() {
+							return [];
+						},
+						notify: true
+					}
+				},
+				listeners: {
+					'add-device-clicked': '_addedDeviceClickedListener',
+					'legendDropdownValueChanged': '_legendDropdownSelected',
+					'map-changed': '_onMapChanged'
+				},
+				ready: function() {
+					//user can set customize icon when a icon is clicked on
+					this.selectedIcon = {
+						'color': 'red',
+						'icon': 'http://downloadicons.net/sites/default/files/check--selected-icon-67566.png',
+						"iconHeight": 20,
+						"iconWidth": 20
+					};
+					//user needs to provide all dropdown menu content
+					this.dropDownConfig = {
+						"items": [{
+							"key": "issueCommand",
+							"val": "Issue Command"
+						}, {
+							"key": "addDevice",
+							"val": "Add Device"
+						}, {
+							"key": "RunDiagnostic",
+							"val": "Run Diagnostic"
+						}, {
+							"key": "assignTechnician",
+							"val": "Assign Technician"
+						}],
+						"max-cont-character-width": 10,
+						"extend-dropdown": true,
+						"extend-dropdown-by": 15,
+						'display-value': "Action on Device"
+					};
+					this.sideMenuDropdown = {
+						"items": [{
+							"key": "issueCommand",
+							"val": "Issue Command"
+						}, {
+							"key": "RunDiagnostic",
+							"val": "Run Diagnostic"
+						}, {
+							"key": "assignTechnician",
+							"val": "Assign Technician"
+						}],
+						"max-cont-character-width": 10,
+						"extend-dropdown": true,
+						"extend-dropdown-by": 15,
+						'display-value': "Action on Selected Device"
+					};
+				},
+				_handleFetchInitialDataResponse: function(e) {
+					var response = e.detail.response;
+					this._convertResponseToFeature(response);
+				},
+				/**
+				 * Function to convert input data to feature type data
+				 * @input json
+				 * @return geoJSON
+				 */
+				_convertResponseToFeature: function(response) {
+					featureArray = [];
+					for (var i = 0; i < response.length; i++) {
+						var lat = response[i].latitude;
+						var lng = response[i].longitude;
+						var eachFeature = {
+							"type": "Feature",
+							"properties": response[i].device,
+							"iconInfo": this._getIconInfo(response[i]),
+							"geometry": {
+								"type": "Point",
+								"coordinates": [lng, lat]
+							}
+						};
+						featureArray.push(eachFeature);
+					}
+					this.set('inputData', featureArray);
+				},
+				/**
+				 * User define function to assign iconInfo to individual icon
+				 * @input each Object
+				 * @return icon information
+				 */
+				_getIconInfo: function(eachDevice) {
+					var status = eachDevice.device.status.device_status;
+					if (status == "REACHABLE") {
+						return {
+							"icon": "http://a2.mzstatic.com/us/r30/Purple3/v4/9c/e8/85/9ce8858b-6037-d564-8568-96a1b4bd6562/icon350x350.jpeg",
+							"iconHeight": 20,
+							"iconWidth": 20
+						};
+					} else if (status == "UNREACHABLE") {
+						return {
+							"icon": "https://cdn3.iconfinder.com/data/icons/rcons-user-profession/32/repairer-128.png",
+							"iconHeight": 20,
+							"iconWidth": 20
+						};
+					} else if (status == "UNASSIGNED") {
+						return {
+							"icon": "http://icons.apnic.net/s/en/2171/31/_/images/icons/profilepics/anonymous.png",
+							"iconHeight": 20,
+							"iconWidth": 20
+						};
+					}
+				},
+				_onMapChanged: function(evt) {
+					var bound = evt.detail.bound;
+					this.debounce('debounceMapMovement', function() {
+						this._fetchFeatureBaseOnMapBound(bound);
+					}, 1000);
+				},
+				/**
+				 * function to take in bound information and user can use the information
+				 * @input bound info
+				 */
+				_fetchFeatureBaseOnMapBound: function(bound) {
+					var NELat = bound._northEast.lat;
+					var NELng = bound._northEast.lng;
+					var SELat = bound._southWest.lat;
+					var SELng = bound._southWest.lng;
+					//Fake API call with random
+					// var test=Math.floor((Math.random() * 100) + 1);
+					// if (test > 50){
+					//   this.$.fetchMapFeatures.url="initialData.json";
+					//   this.$.fetchMapFeatures.generateRequest();
 
-          }
-          else if (valueClicked == "Assign Technician"){
+					// }
+					// else{
+					//   this.$.fetchMapFeatures.url="backEndData.json";
+					//   this.$.fetchMapFeatures.generateRequest();
+					// } 
+				},
+				/**
+				 * listener for legend dropdown selection
+				 * @input {featureSelected:object,textValue:"textValue of DropDown"}
+				 */
+				_legendDropdownSelected: function(evt) {
+					var valueClicked = evt.detail.textValue;
+					var feature = evt.detail.featureSelected.feature;
+					var id = feature.properties.id;
+					if (valueClicked == "Add Device") {
+						var found = _.findIndex(this.selectedFeatures, function(feature) {
+							return feature.properties.id == id;
+						});
+						if (found == -1) {
+							this.push('selectedFeatures', feature);
+						}
+					} else if (valueClicked == "Issue Command") {
 
-          }
-          else if (valueClicked == "Run Diagnostic"){
+					} else if (valueClicked == "Assign Technician") {
 
-          }   
-        }
-      });
-    });
-  </script>
+					} else if (valueClicked == "Run Diagnostic") {
+
+					}
+				}
+			});
+		});
+
+	</script>
 </dom-module>
-

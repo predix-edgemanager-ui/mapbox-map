@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <link rel="import" href="../../../polymer/polymer.html">
 <link rel="import" href="../mapbox-behaviors/mapbox-behaviors.html">
 <!--
@@ -33,55 +34,56 @@ a child element of the `mapbox-map` element.
 @homepage https://ruben96.github.io/mapbox-map/elements/mapbox-map/
 -->
 <dom-module id="mapbox-polyline">
-  <style>
-    :host {
-      display: block;
-    }
-  </style>
-  <template>
-    <content id="points" select="mapbox-point"></content>
-  </template>
-  <script>
+	<style>
+		:host {
+			display: block;
+		}
+
+	</style>
+	<template>
+		<content id="points" select="mapbox-point"></content>
+	</template>
+	<script>
 		Polymer({
-		  is: "mapbox-polyline",
-      properties: {
-       /**
-        * A Feature API object.
-        */
-        feature: Object,
+			is: "mapbox-polyline",
+			properties: {
+				/**
+				 * A Feature API object.
+				 */
+				feature: Object,
 
-       /**
-        * A Maps API object.
-        */
-        map: {
-          type: Object,
-          observer: '_mapChanged'
-        },
-      },
+				/**
+				 * A Maps API object.
+				 */
+				map: {
+					type: Object,
+					observer: '_mapChanged'
+				},
+			},
 
-      behaviors: [
-        MapBox.MapBoxContentPoint,
-        MapBox.MapBoxPath,
-        MapBox.RemoveFeature
-      ],
+			behaviors: [
+				MapBox.MapBoxContentPoint,
+				MapBox.MapBoxPath,
+				MapBox.RemoveFeature
+			],
 
-      _mapChanged: function(){
-        if ( this.map ) {
-        console.log("Polyline called!!");
-          this.feature = L.polyline( [],   this.pathOpts );
-          this.feature.addTo( this.map );
-          this.updateMapBoxPoint();
+			_mapChanged: function() {
+				if (this.map) {
+					console.log("Polyline called!!");
+					this.feature = L.polyline([], this.pathOpts);
+					this.feature.addTo(this.map);
+					this.updateMapBoxPoint();
 
-          this.feature.on('click dblclick mousedown mouseover mouseout contextmenu add remove popupopen popupclose', function(e) {
-            this.fire(e.type, e);
-          }, this);
-        }
-      },
+					this.feature.on('click dblclick mousedown mouseover mouseout contextmenu add remove popupopen popupclose', function(e) {
+						this.fire(e.type, e);
+					}, this);
+				}
+			},
 
-      detached: function(){
-        this.removeLayer();
-      }
+			detached: function() {
+				this.removeLayer();
+			}
 		});
 
-  </script>
+	</script>
 </dom-module>
